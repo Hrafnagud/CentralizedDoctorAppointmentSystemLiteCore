@@ -1,6 +1,10 @@
-﻿Required core packages to install
-	Entity Framework
+﻿Required core packages to install (All with Core tag)
+	Entity Framework Core
 	SqlServer
 	Tools
 	Design
 	Identity
+
+Inside AdminLTE folder, take following folders and paste in new folder named theme-assets. Then drag the new folder on wwwroot under CDASLiteUI:
+	dist
+	plugins

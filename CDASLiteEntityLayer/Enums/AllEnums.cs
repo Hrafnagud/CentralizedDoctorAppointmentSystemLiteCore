@@ -16,4 +16,10 @@ namespace CDASLiteEntityLayer.Enums
         Male,
         Female
     }
+
+    public enum RoleNames : byte
+    {
+        Passive,
+        Admin
+    }
 }
