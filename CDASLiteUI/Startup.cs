@@ -1,5 +1,7 @@
+using CDASLiteDataAccessLayer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -22,6 +24,11 @@ namespace CDASLiteUI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            //begin myComment# To perform connection string connection for Aspnet, dbcontext must be added into its services.
+            services.AddDbContext<MyContext> (options => {
+                options.UseSqlServer(Configuration.GetConnectionString("SqlConnection"));
+            });
+            //end myComment#
             services.AddControllersWithViews();
         }
 
