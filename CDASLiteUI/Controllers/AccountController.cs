@@ -111,5 +111,47 @@ namespace CDASLiteUI.Controllers
                 return View();
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> ConfirmEmail(string userId, string code)
+        {
+            try
+            {
+                if (userId == null ||code == null)
+                {
+                    return NotFound("Page not found!");
+                }
+                var user = await userManager.FindByIdAsync(userId);
+                if (user == null)
+                {
+                    return NotFound("User no found!");
+                }
+
+                code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));
+
+                //EmailConfirmed = 1 or True
+                var result =await userManager.ConfirmEmailAsync(user, code);
+
+                if (result.Succeeded)
+                {
+                    //Is userRole passive?
+                    if (userManager.IsInRoleAsync(user, RoleNames.Passive.ToString()).Result)
+                    {
+                        await userManager.RemoveFromRoleAsync(user, RoleNames.Passive.ToString());
+                        await userManager.AddToRoleAsync(user, RoleNames.Patient.ToString());
+                    }
+                    TempData["EmailConfirmedMessage"] = "Your account has been activated.";
+                    return RedirectToAction("Login", "Account");
+                }
+
+                ViewBag.EmailConfirmedMessage = "Your account activation failed!";
+                return View();
+            }
+            catch (Exception ex)
+            {
+                ViewBag.EmailConfirmedMessage = "An unexpected error has occured! Try again!";
+                return View();
+            }
+        }
     }
 }
