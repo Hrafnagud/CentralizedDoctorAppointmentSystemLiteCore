@@ -3,6 +3,7 @@ using CDASLiteEntityLayer;
 using CDASLiteEntityLayer.Enums;
 using CDASLiteEntityLayer.IdentityModels;
 using CDASLiteUI.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
@@ -152,6 +153,49 @@ namespace CDASLiteUI.Controllers
                 ViewBag.EmailConfirmedMessage = "An unexpected error has occured! Try again!";
                 return View();
             }
+        }
+
+        [HttpGet]
+        public IActionResult Login()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Login(LoginViewModel model)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    ModelState.AddModelError("", "Proper data entry is required!");
+                    return View(model);
+                }
+
+                var result = await signInManager.PasswordSignInAsync(model.UserName, model.Password, model.RememberMe, true);
+                if (result.Succeeded)
+                {
+                    return RedirectToAction("Index", "Home");
+                }
+                else
+                {
+                    ModelState.AddModelError("", "Wrong username or password!");
+                    return View(model);
+                }
+            }
+            catch (Exception)
+            {
+                ModelState.AddModelError("", "An unexpected error has occured!");
+                return View(model);
+            }
+        }
+
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> Logout()
+        {
+            await signInManager.SignOutAsync();
+            return RedirectToAction("Index", "Home");
         }
     }
 }
