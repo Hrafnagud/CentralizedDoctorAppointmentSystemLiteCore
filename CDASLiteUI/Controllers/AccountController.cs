@@ -1,11 +1,16 @@
-﻿using CDASLiteEntityLayer.Enums;
+﻿using CDASLiteBusinessLogicLayer.EmailService;
+using CDASLiteEntityLayer;
+using CDASLiteEntityLayer.Enums;
 using CDASLiteEntityLayer.IdentityModels;
 using CDASLiteUI.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 
 namespace CDASLiteUI.Controllers
@@ -15,12 +20,14 @@ namespace CDASLiteUI.Controllers
         private readonly UserManager<AppUser> userManager;
         private readonly SignInManager<AppUser> signInManager;
         private readonly RoleManager<AppRole> roleManager;
+        private readonly IEmailSender emailSender;
 
-        public AccountController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, RoleManager<AppRole> roleManager)
+        public AccountController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, RoleManager<AppRole> roleManager, IEmailSender emailSender)
         {
            this.userManager = userManager;
             this.signInManager = signInManager;
             this.roleManager = roleManager;
+            this.emailSender = emailSender;
             CheckRoles();
         }
 
@@ -80,6 +87,18 @@ namespace CDASLiteUI.Controllers
                 if (result.Succeeded)
                 {
                     var roleResult = await userManager.AddToRoleAsync(newUser, RoleNames.Patient.ToString());
+                    var code = await userManager.GenerateEmailConfirmationTokenAsync(newUser);
+                    code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+                    var callBackcUrl = Url.Action("ConfirmEmail", "Account", new { UserId = newUser.Id, code = code },protocol : Request.Scheme);
+
+                    var emailMessage = new EmailMessage()
+                    {
+                        Contacts = new string[] { newUser.Email },
+                        Subject = "CDASLite - Email Activation",
+                        Body = $"Hello {newUser.Name} {newUser.Surname} <br/>Click <ahref='{HtmlEncoder.Default.Encode(callBackcUrl)}'>here</a> to activate your account"
+                    };
+                    await emailSender.SendAsnc(emailMessage);
+                    return RedirectToAction("Login", "Account");
                 }
                 else
                 {
