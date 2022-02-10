@@ -197,5 +197,90 @@ namespace CDASLiteUI.Controllers
             await signInManager.SignOutAsync();
             return RedirectToAction("Index", "Home");
         }
+
+        [HttpGet]
+        public IActionResult ResetPassword()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ResetPassword(string email)
+        {
+            try
+            {
+                var user = await userManager.FindByEmailAsync(email);
+                if (user == null)
+                {
+                    ViewBag.ResetPasswordMessage = "Email can not be found!";
+                }
+                else
+                {
+                    var code = await userManager.GeneratePasswordResetTokenAsync(user);
+                    code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+                    var callBackUrl = Url.Action("ConfirmResetPassword","Account", new { userId = user.Id, code = code }, protocol : Request.Scheme);
+                    var emailMessage = new EmailMessage()
+                    {
+                        Subject = "CDASLite - Forgot my password",
+                        Body = $"Hello {user.Name} {user.Surname}!<br/>Click <a href='{HtmlEncoder.Default.Encode(callBackUrl)}'>here</a> to renew your password.",
+                    };
+                    await emailSender.SendAsnc(emailMessage);
+                    ViewBag.ResetPasswordMessage = "Password renew instructions has been sent to your email address!";
+                }
+                return View();
+            }
+            catch (Exception ex)
+            {
+                ViewBag.ResetPasswordMessage = "An unexpected error has occured!";
+                return View();
+            }
+        }
+
+        [HttpGet]
+        public IActionResult ConfirmResetPassword(string userId, string code)
+        {
+            if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(code))
+            {
+                return BadRequest("test");
+            }
+            ViewBag.UserId = userId;
+            ViewBag.Code = code;
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ConfirmResetPassword(ResetPasswordViewModel model)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return View(model);
+                }
+                var user = await userManager.FindByIdAsync(model.UserId);
+                if (user == null)
+                {
+                    ModelState.AddModelError(string.Empty, "User not found!");
+                    return View(model);
+                }
+                var code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(model.Code));
+                var result = await userManager.ResetPasswordAsync(user, code, model.NewPassword);
+                if (result.Succeeded)
+                {
+                    TempData["ConfirmResetPasswordMessage"] = "Your password has been successfully Renewed!";
+                    return RedirectToAction("Login", "Account");
+                }
+                else
+                {
+                    ModelState.AddModelError("", "Password renewal failed");
+                    return View(model);
+                }
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", "An unexpected error has occured!");
+                return View(model);
+            }
+        }
     }
 }
