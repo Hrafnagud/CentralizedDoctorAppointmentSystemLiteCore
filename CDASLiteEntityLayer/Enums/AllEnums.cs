@@ -20,6 +20,7 @@ namespace CDASLiteEntityLayer.Enums
     public enum RoleNames : byte
     {
         Passive,
-        Admin
+        Admin,
+        Patient
     }
 }

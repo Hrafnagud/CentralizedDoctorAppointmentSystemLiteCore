@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CDASLiteEntityLayer.Enums;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -32,5 +33,7 @@ namespace CDASLiteUI.Models
         [Display(Name = "Password Repeat")]
         [Compare(nameof(Password), ErrorMessage = "Passwords doesn't match!")]
         public string ConfirmPassword { get; set; }
+        [Required(ErrorMessage = "")]
+        public Genders Gender { get; set; }
     }
 }

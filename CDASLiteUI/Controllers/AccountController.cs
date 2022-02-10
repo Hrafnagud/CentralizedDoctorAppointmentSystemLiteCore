@@ -1,5 +1,6 @@
 ﻿using CDASLiteEntityLayer.Enums;
 using CDASLiteEntityLayer.IdentityModels;
+using CDASLiteUI.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -42,8 +43,54 @@ namespace CDASLiteUI.Controllers
         [HttpGet]
         public IActionResult Register()
         {
-
             return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Register(RegisterViewModel model)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return View(model);
+                }
+                var checkUsername = await userManager.FindByNameAsync(model.UserName);
+                if (checkUsername != null)
+                {
+                    ModelState.AddModelError(nameof(model.UserName), "Username already exists!");
+                    return View(model);
+                }
+                var checkEmail = await userManager.FindByEmailAsync(model.Email);
+                if (checkEmail != null)
+                {
+                    ModelState.AddModelError(nameof(model.Email), "Email already exists!");
+                    return View(model);
+                }
+                AppUser newUser = new AppUser()
+                {
+                    Email = model.Email,
+                    Name = model.Name,
+                    Surname = model.Surname,
+                    UserName = model.UserName,
+                    Gender = model.Gender
+                };
+
+                var result = await userManager.CreateAsync(newUser, model.Password);
+                if (result.Succeeded)
+                {
+                    var roleResult = await userManager.AddToRoleAsync(newUser, RoleNames.Patient.ToString());
+                }
+                else
+                {
+                    ModelState.AddModelError("", "An unexpected error has occured!");
+                    return View(model);
+                }
+            }
+            catch (Exception ex)
+            {
+                return View();
+            }
         }
     }
 }
