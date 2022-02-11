@@ -167,10 +167,10 @@ namespace CDASLiteDataAccessLayer.Migrations
 
                     b.HasIndex("PatientId");
 
-                    b.ToTable("Appointment");
+                    b.ToTable("Appointments");
                 });
 
-            modelBuilder.Entity("CDASLiteEntityLayer.Models.AppointmentHours", b =>
+            modelBuilder.Entity("CDASLiteEntityLayer.Models.AppointmentHour", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -179,9 +179,6 @@ namespace CDASLiteDataAccessLayer.Migrations
 
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<int?>("GetHospitalClinicsId")
-                        .HasColumnType("int");
 
                     b.Property<int>("HospitalClinicId")
                         .HasColumnType("int");
@@ -192,17 +189,15 @@ namespace CDASLiteDataAccessLayer.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("GetHospitalClinicsId");
+                    b.HasIndex("HospitalClinicId");
 
                     b.ToTable("AppointmentHours");
                 });
 
             modelBuilder.Entity("CDASLiteEntityLayer.Models.City", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    b.Property<byte>("Id")
+                        .HasColumnType("tinyint");
 
                     b.Property<string>("CityName")
                         .IsRequired()
@@ -247,8 +242,8 @@ namespace CDASLiteDataAccessLayer.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("CityId")
-                        .HasColumnType("int");
+                    b.Property<byte>("CityId")
+                        .HasColumnType("tinyint");
 
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
@@ -306,7 +301,7 @@ namespace CDASLiteDataAccessLayer.Migrations
                     b.ToTable("Hospitals");
                 });
 
-            modelBuilder.Entity("CDASLiteEntityLayer.Models.HospitalClinics", b =>
+            modelBuilder.Entity("CDASLiteEntityLayer.Models.HospitalClinic", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -458,7 +453,7 @@ namespace CDASLiteDataAccessLayer.Migrations
 
             modelBuilder.Entity("CDASLiteEntityLayer.Models.Appointment", b =>
                 {
-                    b.HasOne("CDASLiteEntityLayer.Models.HospitalClinics", "HospitalClinic")
+                    b.HasOne("CDASLiteEntityLayer.Models.HospitalClinic", "HospitalClinic")
                         .WithMany("ClinicAppointments")
                         .HasForeignKey("HospitalClinicId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -473,13 +468,15 @@ namespace CDASLiteDataAccessLayer.Migrations
                     b.Navigation("Patient");
                 });
 
-            modelBuilder.Entity("CDASLiteEntityLayer.Models.AppointmentHours", b =>
+            modelBuilder.Entity("CDASLiteEntityLayer.Models.AppointmentHour", b =>
                 {
-                    b.HasOne("CDASLiteEntityLayer.Models.HospitalClinics", "GetHospitalClinics")
+                    b.HasOne("CDASLiteEntityLayer.Models.HospitalClinic", "GetHospitalClinic")
                         .WithMany("AppointmentHours")
-                        .HasForeignKey("GetHospitalClinicsId");
+                        .HasForeignKey("HospitalClinicId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Navigation("GetHospitalClinics");
+                    b.Navigation("GetHospitalClinic");
                 });
 
             modelBuilder.Entity("CDASLiteEntityLayer.Models.District", b =>
@@ -513,7 +510,7 @@ namespace CDASLiteDataAccessLayer.Migrations
                     b.Navigation("HospitalDistrict");
                 });
 
-            modelBuilder.Entity("CDASLiteEntityLayer.Models.HospitalClinics", b =>
+            modelBuilder.Entity("CDASLiteEntityLayer.Models.HospitalClinic", b =>
                 {
                     b.HasOne("CDASLiteEntityLayer.Models.Clinic", "Clinic")
                         .WithMany("HospitalClinics")
@@ -630,7 +627,7 @@ namespace CDASLiteDataAccessLayer.Migrations
                     b.Navigation("HospitalClinics");
                 });
 
-            modelBuilder.Entity("CDASLiteEntityLayer.Models.HospitalClinics", b =>
+            modelBuilder.Entity("CDASLiteEntityLayer.Models.HospitalClinic", b =>
                 {
                     b.Navigation("AppointmentHours");
 
