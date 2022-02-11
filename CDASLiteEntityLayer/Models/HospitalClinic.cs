@@ -8,7 +8,8 @@ using System.Threading.Tasks;
 
 namespace CDASLiteEntityLayer.Models
 {
-    public class HospitalClinics : Base<int>
+    [Table("HospitalClinics")]
+    public class HospitalClinic : Base<int>
     {
         //Hospital
         public int HospitalId { get; set; }
@@ -25,7 +26,7 @@ namespace CDASLiteEntityLayer.Models
 
         public virtual Doctor Doctor { get; set; }
 
-        public virtual List<AppointmentHours> AppointmentHours { get; set; }
+        public virtual List<AppointmentHour> AppointmentHours { get; set; }
 
         public virtual List<Appointment> ClinicAppointments { get; set; }
 

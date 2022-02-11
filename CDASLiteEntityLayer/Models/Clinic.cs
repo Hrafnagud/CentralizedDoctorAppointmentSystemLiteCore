@@ -15,6 +15,6 @@ namespace CDASLiteEntityLayer.Models
         [StringLength(100, MinimumLength = 2, ErrorMessage = "Clinic name must contain characters between 2-50!")]
         public string ClinicName { get; set; }
 
-        public virtual List<HospitalClinics> HospitalClinics { get; set; }  //HospitalClinics - Clinic relationship
+        public virtual List<HospitalClinic> HospitalClinics { get; set; }  //HospitalClinics - Clinic relationship
     }
 }

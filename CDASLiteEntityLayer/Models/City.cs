@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace CDASLiteEntityLayer.Models
 {
     [Table("Cities")]
-    public class City : Base<int>
+    public class City : Base<byte>
     {
         [Required]
         [StringLength(50, MinimumLength = 2, ErrorMessage = "City name must consist characters between 2-50!")]

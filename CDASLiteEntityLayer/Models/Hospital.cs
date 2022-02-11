@@ -20,6 +20,6 @@ namespace CDASLiteEntityLayer.Models
 
         public virtual District HospitalDistrict { get; set; }
 
-        public virtual List<HospitalClinics> HospitalClinics { get; set; }  //Hospital - HospitalClinics relationship
+        public virtual List<HospitalClinic> HospitalClinics { get; set; }  //Hospital - HospitalClinics relationship
     }
 }

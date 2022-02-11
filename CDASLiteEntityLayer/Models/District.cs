@@ -15,7 +15,7 @@ namespace CDASLiteEntityLayer.Models
         [StringLength(50, MinimumLength = 2, ErrorMessage = "District name must consist characters between 2-50!")]
         public string DistrictName{ get; set; }
 
-        public int CityId { get; set; } //Every district will have a city
+        public byte CityId { get; set; } //Every district will have a city
         [ForeignKey("CityId")]
 
         public virtual City City { get; set; }  
