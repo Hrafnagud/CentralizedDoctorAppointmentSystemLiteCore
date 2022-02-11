@@ -25,5 +25,9 @@ namespace CDASLiteEntityLayer.Models
 
         public virtual Doctor Doctor { get; set; }
 
+        public virtual List<AppointmentHours> AppointmentHours { get; set; }
+
+        public virtual List<Appointment> ClinicAppointments { get; set; }
+
     }
 }

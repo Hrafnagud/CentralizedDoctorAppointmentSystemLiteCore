@@ -1,4 +1,5 @@
 ﻿using CDASLiteEntityLayer.Enums;
+using CDASLiteEntityLayer.Models;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
@@ -28,5 +29,8 @@ namespace CDASLiteEntityLayer.IdentityModels
         public DateTime? BirtDate { get; set; }
         [Required(ErrorMessage = "Gender field is required")]
         public Genders Gender { get; set; }
+
+        public virtual List<Doctor> Doctors{ get; set; }    //Doctor table relation established
+        public virtual List<Patient> Patients{ get; set; }  //Patient table relation established
     }
 }

@@ -8,12 +8,14 @@ using System.Threading.Tasks;
 
 namespace CDASLiteEntityLayer.Models
 {
-    [Table("Doctors")]
-    public class Doctor : PersonBase
+    [Table("Patients")]
+    public class Patient : PersonBase
     {
-        public string UserId { get; set; }      // Identity model's id will be the foreign key here.
+        public string UserId { get; set; }      //Identity model's id will be the foreign key here.
         [ForeignKey("UserId")]
+
         public virtual AppUser AppUser{ get; set; }
-        public virtual List<HospitalClinics> HospitalClinics { get; set; }
+
+        public virtual List<Appointment> PatientAppointments { get; set; }
     }
 }
