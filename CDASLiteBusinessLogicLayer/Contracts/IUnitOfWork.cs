@@ -9,5 +9,9 @@ namespace CDASLiteBusinessLogicLayer.Contracts
     public interface IUnitOfWork : IDisposable
     {
         ICityRepository CityRepository { get; }
+        IDistrictRepository DistrictRepository { get; }
+        IDoctorRepository DoctorReposittory { get; }
+        IPatientRepository PatientReposittory { get; }
+
     }
 }

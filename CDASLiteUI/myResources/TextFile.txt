@@ -8,3 +8,9 @@
 Inside AdminLTE folder, take following folders and paste in new folder named theme-assets. Then drag the new folder on wwwroot under CDASLiteUI:
 	dist
 	plugins
+
+For BLL:
+//First repository interface (contracts)
+//Then Class for that interface (implementations)
+//Add InterfaceRepository to IUnitOfWork interface
+//UnitOfWork (Injection and Implement)
