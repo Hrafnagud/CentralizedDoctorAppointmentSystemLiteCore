@@ -23,7 +23,7 @@ namespace CDASLiteBusinessLogicLayer.EmailService
         public string Password => configuration.GetSection("EmailOptions:Password").Value;
         public string Smtp => configuration.GetSection("EmailOptions:Smtp").Value;
         public int SmtpPort=> Convert.ToInt32(configuration.GetSection("EmailOptions:SmtpPort").Value);
-        public async Task SendAsnc(EmailMessage message)
+        public async Task SendAsync(EmailMessage message)
         {
             var mail = new MailMessage() {
             From = new MailAddress(this.SenderMail),

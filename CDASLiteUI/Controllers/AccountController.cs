@@ -25,7 +25,7 @@ namespace CDASLiteUI.Controllers
 
         public AccountController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, RoleManager<AppRole> roleManager, IEmailSender emailSender)
         {
-           this.userManager = userManager;
+            this.userManager = userManager;
             this.signInManager = signInManager;
             this.roleManager = roleManager;
             this.emailSender = emailSender;
@@ -96,9 +96,9 @@ namespace CDASLiteUI.Controllers
                     {
                         Contacts = new string[] { newUser.Email },
                         Subject = "CDASLite - Email Activation",
-                        Body = $"Hello {newUser.Name} {newUser.Surname} <br/>Click <ahref='{HtmlEncoder.Default.Encode(callBackcUrl)}'>here</a> to activate your account"
+                        Body = $"Hello {newUser.Name} {newUser.Surname} <br/>Click <a href='{HtmlEncoder.Default.Encode(callBackcUrl)}'>here</a> to activate your account"
                     };
-                    await emailSender.SendAsnc(emailMessage);
+                    await emailSender.SendAsync(emailMessage);
                     return RedirectToAction("Login", "Account");
                 }
                 else
@@ -118,7 +118,7 @@ namespace CDASLiteUI.Controllers
         {
             try
             {
-                if (userId == null ||code == null)
+                if (userId == null || code == null)
                 {
                     return NotFound("Page not found!");
                 }
@@ -224,8 +224,8 @@ namespace CDASLiteUI.Controllers
                         Subject = "CDASLite - Forgot my password",
                         Body = $"Hello {user.Name} {user.Surname}!<br/>Click <a href='{HtmlEncoder.Default.Encode(callBackUrl)}'>here</a> to renew your password.",
                     };
-                    await emailSender.SendAsnc(emailMessage);
-                    ViewBag.ResetPasswordMessage = "Password renew instructions has been sent to your email address!";
+                    await emailSender.SendAsync(emailMessage);
+                    ViewBag.ResetPasswordMessage = "Password reset instructions have been sent to your email address.";
                 }
                 return View();
             }
@@ -267,12 +267,12 @@ namespace CDASLiteUI.Controllers
                 var result = await userManager.ResetPasswordAsync(user, code, model.NewPassword);
                 if (result.Succeeded)
                 {
-                    TempData["ConfirmResetPasswordMessage"] = "Your password has been successfully Renewed!";
+                    TempData["ConfirmResetPasswordMessage"] = "Your password has been successfully reset.";
                     return RedirectToAction("Login", "Account");
                 }
                 else
                 {
-                    ModelState.AddModelError("", "Password renewal failed");
+                    ModelState.AddModelError("", "Password reset failed");
                     return View(model);
                 }
             }

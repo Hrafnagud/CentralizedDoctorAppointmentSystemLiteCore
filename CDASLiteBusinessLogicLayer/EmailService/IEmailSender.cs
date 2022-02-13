@@ -9,6 +9,6 @@ namespace CDASLiteBusinessLogicLayer.EmailService
 {
     public interface IEmailSender
     {
-        Task SendAsnc(EmailMessage message);
+        Task SendAsync(EmailMessage message);
     }
 }
