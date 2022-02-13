@@ -15,8 +15,6 @@ namespace CDASLiteEntityLayer.Models
         public int HospitalId { get; set; }
         [ForeignKey("HospitalId")]
 
-        public virtual Hospital Hospital { get; set; }
-
         public int ClinicId { get; set; }   //Relationship with clinic
         [ForeignKey("ClinicId")]
         public virtual Clinic Clinic { get; set; }
@@ -24,10 +22,9 @@ namespace CDASLiteEntityLayer.Models
         public string DoctorId { get; set; }    //Relationship with doctor
         [ForeignKey("DoctorId")]
 
+        public virtual Hospital Hospital { get; set; }
         public virtual Doctor Doctor { get; set; }
-
         public virtual List<AppointmentHour> AppointmentHours { get; set; }
-
         public virtual List<Appointment> ClinicAppointments { get; set; }
 
     }
