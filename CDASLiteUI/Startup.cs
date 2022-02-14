@@ -2,8 +2,10 @@ using CDASLiteBusinessLogicLayer.Contracts;
 using CDASLiteBusinessLogicLayer.EmailService;
 using CDASLiteBusinessLogicLayer.Implementations;
 using CDASLiteDataAccessLayer;
+using CDASLiteEntityLayer.IdentityModels;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -38,6 +40,23 @@ namespace CDASLiteUI
             services.AddScoped<IEmailSender, EmailSender>();
             //end myComment#
             services.AddControllersWithViews();
+            //begin myComment#
+            services.AddRazorPages();
+            services.AddMvc();
+            services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromSeconds(60); //Logout due to inactivity
+            });
+            services.AddIdentity< AppUser, AppRole >(opts =>
+            {
+                opts.User.RequireUniqueEmail = true;
+                opts.Password.RequiredLength = 6;
+                opts.Password.RequireNonAlphanumeric = false;
+                opts.Password.RequireLowercase = false;
+                opts.Password.RequireDigit = false;
+                opts.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._";
+            }).AddDefaultTokenProviders().AddEntityFrameworkStores<MyContext>();
+            //end myComment#
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -56,6 +75,14 @@ namespace CDASLiteUI
             app.UseRouting();
 
             app.UseAuthorization();
+
+            //begin myComment#
+            app.UseStaticFiles();       //For wwwroot folder
+            app.UseRouting();           //For Routing mechanism
+            app.UseSession();           //For Session mechanism
+            app.UseAuthentication();    //To use login logout
+            app.UseAuthorization();     //To use authorization attribute
+            //end myComment#
 
             app.UseEndpoints(endpoints =>
             {
