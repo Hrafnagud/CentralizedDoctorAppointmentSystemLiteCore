@@ -11,10 +11,8 @@ namespace CDASLiteBusinessLogicLayer.Implementations
 {
     public class AppointmentHourRepository : Repository<AppointmentHour>, IAppointmentHourRepository
     {
-        private readonly MyContext myContext;
         public AppointmentHourRepository(MyContext myContext) : base(myContext)
         {
-            this.myContext = myContext;
         }
     }
 }

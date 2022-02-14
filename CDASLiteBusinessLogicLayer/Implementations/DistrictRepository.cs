@@ -11,7 +11,6 @@ namespace CDASLiteBusinessLogicLayer.Implementations
 {
     public class DistrictRepository : Repository<District>, IDistrictRepository
     {
-        private readonly MyContext myContext;
         public DistrictRepository(MyContext myContext) : base(myContext)
         {
 

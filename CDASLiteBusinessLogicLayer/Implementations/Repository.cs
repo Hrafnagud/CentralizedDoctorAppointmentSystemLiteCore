@@ -12,7 +12,7 @@ namespace CDASLiteBusinessLogicLayer.Implementations
 {
     public class Repository<T> : IRepositoryBase<T> where T: class, new()
     {
-        private readonly MyContext myContext;
+        protected readonly MyContext myContext;
         public Repository(MyContext myContext)
         {
             this.myContext = myContext;

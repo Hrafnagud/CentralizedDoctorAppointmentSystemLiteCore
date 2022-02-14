@@ -1,3 +1,6 @@
+using CDASLiteBusinessLogicLayer.Contracts;
+using CDASLiteBusinessLogicLayer.EmailService;
+using CDASLiteBusinessLogicLayer.Implementations;
 using CDASLiteDataAccessLayer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -28,6 +31,11 @@ namespace CDASLiteUI
             services.AddDbContext<MyContext> (options => {
                 options.UseSqlServer(Configuration.GetConnectionString("SqlConnection"));
             });
+            //end myComment#
+
+            //begin #myComment# To solidify IUnitOfWork and EmailSender. If we come across to IUW or IES, their object will be created!
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<IEmailSender, EmailSender>();
             //end myComment#
             services.AddControllersWithViews();
         }

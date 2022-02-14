@@ -11,10 +11,8 @@ namespace CDASLiteBusinessLogicLayer.Implementations
 {
     public class HospitalRepository : Repository<Hospital>, IHospitalRepository
     {
-        private readonly MyContext myContext;
         public HospitalRepository(MyContext myContext) : base(myContext)
         {
-            this.myContext = myContext;
         }
     }
 }
