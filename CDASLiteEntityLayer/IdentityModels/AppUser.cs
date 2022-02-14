@@ -24,9 +24,10 @@ namespace CDASLiteEntityLayer.IdentityModels
         public DateTime RegisterDate { get; set; } = DateTime.Now;
 
         public string Picture { get; set; }
-        [DataType(DataType.Date)]
 
+        [DataType(DataType.Date)]
         public DateTime? BirtDate { get; set; }
+
         [Required(ErrorMessage = "Gender field is required")]
         public Genders Gender { get; set; }
 

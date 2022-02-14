@@ -39,7 +39,7 @@ namespace CDASLiteUI
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IEmailSender, EmailSender>();
             //end myComment#
-            services.AddControllersWithViews();
+            services.AddControllersWithViews().AddRazorRuntimeCompilation();    //Razor page changes will be able to compiled without stopping IIS.
             //begin myComment#
             services.AddRazorPages();
             services.AddMvc();

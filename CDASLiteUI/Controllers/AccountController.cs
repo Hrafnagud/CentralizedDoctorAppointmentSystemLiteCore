@@ -1,7 +1,9 @@
-﻿using CDASLiteBusinessLogicLayer.EmailService;
+﻿using CDASLiteBusinessLogicLayer.Contracts;
+using CDASLiteBusinessLogicLayer.EmailService;
 using CDASLiteEntityLayer;
 using CDASLiteEntityLayer.Enums;
 using CDASLiteEntityLayer.IdentityModels;
+using CDASLiteEntityLayer.Models;
 using CDASLiteUI.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -22,13 +24,15 @@ namespace CDASLiteUI.Controllers
         private readonly SignInManager<AppUser> signInManager;
         private readonly RoleManager<AppRole> roleManager;
         private readonly IEmailSender emailSender;
+        private readonly IUnitOfWork unitOfWork;
 
-        public AccountController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, RoleManager<AppRole> roleManager, IEmailSender emailSender)
+        public AccountController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, RoleManager<AppRole> roleManager, IEmailSender emailSender, IUnitOfWork unitOfWork)
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
             this.roleManager = roleManager;
             this.emailSender = emailSender;
+            this.unitOfWork = unitOfWork;
             CheckRoles();
         }
 
@@ -63,10 +67,10 @@ namespace CDASLiteUI.Controllers
                 {
                     return View(model);
                 }
-                var checkUsername = await userManager.FindByNameAsync(model.UserName);
+                var checkUsername = await userManager.FindByNameAsync(model.TRID);
                 if (checkUsername != null)
                 {
-                    ModelState.AddModelError(nameof(model.UserName), "Username already exists!");
+                    ModelState.AddModelError(nameof(model.TRID), "TR ID already registered !");
                     return View(model);
                 }
                 var checkEmail = await userManager.FindByEmailAsync(model.Email);
@@ -80,7 +84,7 @@ namespace CDASLiteUI.Controllers
                     Email = model.Email,
                     Name = model.Name,
                     Surname = model.Surname,
-                    UserName = model.UserName,
+                    UserName = model.TRID,
                     Gender = model.Gender
                 };
 
@@ -99,6 +103,17 @@ namespace CDASLiteUI.Controllers
                         Body = $"Hello {newUser.Name} {newUser.Surname} <br/>Click <a href='{HtmlEncoder.Default.Encode(callBackcUrl)}'>here</a> to activate your account"
                     };
                     await emailSender.SendAsync(emailMessage);
+
+                    Patient newPatient = new Patient()  //Add patient to patient's table
+                    {
+                        TRID = model.TRID,
+                        UserId = newUser.Id
+                    };
+                    if (unitOfWork.PatientReposittory.Add(newPatient) == false)
+                    {
+                        //Send mail to administrator if an error occurs.
+
+                    }
                     return RedirectToAction("Login", "Account");
                 }
                 else

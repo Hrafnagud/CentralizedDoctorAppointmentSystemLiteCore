@@ -9,8 +9,12 @@ namespace CDASLiteUI.Models
 {
     public class RegisterViewModel
     {
+        [Display(Name = "Turkis Republican ID")]
+        [MinLength(11)]
+        [StringLength(11, ErrorMessage = "TRID must consist 11 digits!")]
+        public string TRID { get; set; }
+
         [Display(Name = "Username")]
-        [Required(ErrorMessage = "Username field is required!")]
         public string UserName { get; set; }
 
         [Required(ErrorMessage = "Name field is required!")]
@@ -33,13 +37,11 @@ namespace CDASLiteUI.Models
         [DataType(DataType.Password)]
         public string Password { get; set; }
 
-        [Required(ErrorMessage = "Password repetition is required!")]
-        [DataType(DataType.Password)]
-        [Display(Name = "Password Repeat")]
-        [Compare(nameof(Password), ErrorMessage = "Passwords don't match!")]
-        public string ConfirmPassword { get; set; }
-
         [Required(ErrorMessage = "Gender details must be provided!")]
         public Genders Gender { get; set; }
+
+        [DataType(DataType.Date)]
+        [Display(Name ="Date of Birth")]
+        public DateTime BirtDate { get; set; }
     }
 }

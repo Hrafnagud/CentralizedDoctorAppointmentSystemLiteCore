@@ -12,7 +12,7 @@ namespace CDASLiteEntityLayer.Enums
 
     public enum Genders : byte
     {
-        Undetermined,
+        Indetermined,
         Male,
         Female
     }

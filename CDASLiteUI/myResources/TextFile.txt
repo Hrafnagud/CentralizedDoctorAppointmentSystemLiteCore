@@ -1,9 +1,10 @@
-﻿Required core packages to install (All with Core tag)
+﻿Required core packages to install (All with Core tag --version 5.0.14)
 	Entity Framework Core
 	SqlServer
 	Tools
 	Design
 	Identity
+	Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation
 
 Inside AdminLTE folder, take following folders and paste in new folder named theme-assets. Then drag the new folder on wwwroot under CDASLiteUI:
 	dist
