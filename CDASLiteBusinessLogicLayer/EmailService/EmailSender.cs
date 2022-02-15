@@ -19,14 +19,14 @@ namespace CDASLiteBusinessLogicLayer.EmailService
             this.configuration = configuration;
         }
 
-        public string SenderMail => configuration.GetSection("EmailOptions:SenderMail").Value;
+        public string Sender => configuration.GetSection("EmailOptions:Sender").Value;
         public string Password => configuration.GetSection("EmailOptions:Password").Value;
         public string Smtp => configuration.GetSection("EmailOptions:Smtp").Value;
         public int SmtpPort=> Convert.ToInt32(configuration.GetSection("EmailOptions:SmtpPort").Value);
         public async Task SendAsync(EmailMessage message)
         {
             var mail = new MailMessage() {
-            From = new MailAddress(this.SenderMail),
+            From = new MailAddress(this.Sender),
             };
 
             //contacts
@@ -62,7 +62,7 @@ namespace CDASLiteBusinessLogicLayer.EmailService
             var smtpClient = new SmtpClient(Smtp, SmtpPort)
             {
                 EnableSsl = true,
-                Credentials = new NetworkCredential(SenderMail, Password)
+                Credentials = new NetworkCredential(Sender, Password)
             };
             await smtpClient.SendMailAsync(mail);
         }

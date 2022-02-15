@@ -198,6 +198,17 @@ namespace CDASLiteUI.Controllers
                     return View(model);
                 }
 
+                //Find user and control whether email has been confirmed or not.
+                var user = await userManager.FindByNameAsync(model.UserName);
+                if (user != null)
+                {
+                    if (!user.EmailConfirmed)
+                    {
+                        ModelState.AddModelError("", "In order to activate your system and use your account, check your email and click activation link");
+                        return View(model);
+                    }
+                }
+
                 var result = await signInManager.PasswordSignInAsync(model.UserName, model.Password, model.RememberMe, true);
                 if (result.Succeeded)
                 {
