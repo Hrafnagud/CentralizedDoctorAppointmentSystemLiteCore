@@ -258,8 +258,9 @@ namespace CDASLiteUI.Controllers
                     var callBackUrl = Url.Action("ConfirmResetPassword","Account", new { userId = user.Id, code = code }, protocol : Request.Scheme);
                     var emailMessage = new EmailMessage()
                     {
+                        Contacts = new string [] {user.Email},
                         Subject = "CDASLite - Forgot my password",
-                        Body = $"Hello {user.Name} {user.Surname}!<br/>Click <a href='{HtmlEncoder.Default.Encode(callBackUrl)}'>here</a> to renew your password.",
+                        Body = $"Hello {user.Name} {user.Surname}!<br/>Click <a href='{HtmlEncoder.Default.Encode(callBackUrl)}'>here</a> to renew your password."
                     };
                     await emailSender.SendAsync(emailMessage);
                     ViewBag.ResetPasswordMessage = "Password reset instructions have been sent to your email address.";
@@ -278,7 +279,9 @@ namespace CDASLiteUI.Controllers
         {
             if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(code))
             {
-                return BadRequest("test");
+                //return BadRequest("test");
+                ModelState.AddModelError(string.Empty, "User not found!");
+                return View();
             }
             ViewBag.UserId = userId;
             ViewBag.Code = code;
