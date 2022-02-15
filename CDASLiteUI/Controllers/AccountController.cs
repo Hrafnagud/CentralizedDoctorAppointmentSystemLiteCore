@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,14 +26,16 @@ namespace CDASLiteUI.Controllers
         private readonly RoleManager<AppRole> roleManager;
         private readonly IEmailSender emailSender;
         private readonly IUnitOfWork unitOfWork;
+        private readonly IConfiguration configuration;
 
-        public AccountController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, RoleManager<AppRole> roleManager, IEmailSender emailSender, IUnitOfWork unitOfWork)
+        public AccountController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, RoleManager<AppRole> roleManager, IEmailSender emailSender, IUnitOfWork unitOfWork, IConfiguration configuration)
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
             this.roleManager = roleManager;
             this.emailSender = emailSender;
             this.unitOfWork = unitOfWork;
+            this.configuration = configuration;
             CheckRoles();
         }
 
@@ -91,7 +94,7 @@ namespace CDASLiteUI.Controllers
                 var result = await userManager.CreateAsync(newUser, model.Password);
                 if (result.Succeeded)
                 {
-                    var roleResult = await userManager.AddToRoleAsync(newUser, RoleNames.Patient.ToString());
+                    var roleResult = await userManager.AddToRoleAsync(newUser, RoleNames.Passive.ToString());
                     var code = await userManager.GenerateEmailConfirmationTokenAsync(newUser);
                     code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
                     var callBackcUrl = Url.Action("ConfirmEmail", "Account", new { UserId = newUser.Id, code = code },protocol : Request.Scheme);
@@ -112,6 +115,14 @@ namespace CDASLiteUI.Controllers
                     if (unitOfWork.PatientReposittory.Add(newPatient) == false)
                     {
                         //Send mail to administrator if an error occurs.
+                        var emailMessageToAdmin = new EmailMessage()
+                        {
+                            Contacts = new string[] { configuration.GetSection("ManagerEmails:Email").Value },
+                            Cc = new string[] { configuration.GetSection("ManagerEmails:EmailToCC").Value },
+                            Subject = "CDASLite - Error! Patient Table",
+                            Body = $"Error occured while adding passive user to the patient table with following information: TRID: {model.TRID}, UserId: {newUser.Id}"
+                        };
+                        await emailSender.SendAsync(emailMessageToAdmin);
 
                     }
                     return RedirectToAction("Login", "Account");
