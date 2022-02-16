@@ -50,7 +50,7 @@ namespace CDASLiteUI.Controllers
                     {
                         Name = item,
                         Description = item
-                    }).Result;
+                    }).Result;  //In methods which is not async type, we can use async object methods by using Result property. 
                 }
             }
         }
