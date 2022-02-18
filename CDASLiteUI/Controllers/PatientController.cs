@@ -49,7 +49,7 @@ namespace CDASLiteUI.Controllers
         {
             try
             {
-
+                ViewBag.Cities = unitOfWork.CityRepository.GetAll(orderBy: x => x.OrderBy(a => a.CityName));
                 return View();
             }
             catch (Exception ex)

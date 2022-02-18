@@ -14,10 +14,14 @@
             <div class="form-group">
                 <span class="text-danger" style="font-weight:bold;margin-right:3px"> * </span>
                 <label for="City" style="font-weight:bold">CITY</label>
-                <select name="City" class="form-control">
-                    <option value="1">Male</option>
-                    <option value="2">Female</option>
-
+                <select id="CitySelect" name="City" class="form-control">
+                    <option selected value="0">Choose a City</option>
+                    @{
+                        foreach (var item in ViewBag.Cities)
+                        {
+                            <option value="@item.Id">@item.CityName</option>
+                        }
+                    }
                 </select>
 
             </div>
@@ -25,3 +29,22 @@
 
     </div>
 </div>
+@section Scripts{ 
+    <script>
+        $('#CitySelect').on('change', function () {
+            var cityId = this.value;
+            if (cityId > 0) {
+                $.ajax({
+                    type: "GET",
+                    url: '/City/GetCityDistricts/' + id,
+                    success: function (res) {
+
+                    },
+                    error: function (err) {
+                        console.log(err);
+                    },
+                });
+            }
+        });
+    </script>
+}
