@@ -1,7 +1,6 @@
 ﻿using CDASLiteBusinessLogicLayer.Contracts;
 using CDASLiteBusinessLogicLayer.EmailService;
 using CDASLiteEntityLayer.IdentityModels;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -12,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace CDASLiteUI.Controllers
 {
-    public class PatientController : Controller
+    public class CityController : Controller
     {
         private readonly UserManager<AppUser> userManager;
         private readonly SignInManager<AppUser> signInManager;
@@ -21,7 +20,7 @@ namespace CDASLiteUI.Controllers
         private readonly IUnitOfWork unitOfWork;
         private readonly IConfiguration configuration;
 
-        public PatientController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, RoleManager<AppRole> roleManager, IEmailSender emailSender, IUnitOfWork unitOfWork, IConfiguration configuration)
+        public CityController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, RoleManager<AppRole> roleManager, IEmailSender emailSender, IUnitOfWork unitOfWork, IConfiguration configuration)
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
@@ -31,31 +30,18 @@ namespace CDASLiteUI.Controllers
             this.configuration = configuration;
         }
 
-        [Authorize]
-        public IActionResult Index()
+        public JsonResult GetCityDistricts(int id)
         {
             try
             {
-                return View();
+                var data = unitOfWork.DistrictRepository
+                    .GetAll(x => x.CityId == id, orderBy: x => x.OrderBy(y => y.DistrictName));
+                return Json(new { isSuccess = true, data });
             }
             catch (Exception ex)
             {
-                return View();
-            }
-        }
 
-        [Authorize]
-        public IActionResult Appointment()
-        {
-            try
-            {
-                ViewBag.Cities = unitOfWork.CityRepository.GetAll(orderBy: x => x.OrderBy(a => a.CityName));
-                ViewBag.Clinics = unitOfWork.ClinicRepository.GetAll(orderBy: x => x.OrderBy(a => a.ClinicName));
-                return View();
-            }
-            catch (Exception ex)
-            {
-                return View();
+                return Json(new { isSuccess = false });
             }
         }
     }
