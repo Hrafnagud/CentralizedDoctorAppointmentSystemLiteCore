@@ -1,0 +1,27 @@
+﻿
+@{
+    ViewData["Title"] = "Appointment";
+    Layout = "~/Views/Shared/_LayoutCDAS.cshtml";
+}
+
+<div class="row">
+
+    @* Randevu al ve geri butonu *@
+</div>
+<div class="row" style="background-color:whitesmoke; border-radius:4px; padding:10px">
+    <div class="col-md-12">
+        <form asp-controller="Patient" asp-action="SaveAppointment" method="post">
+            <div class="form-group">
+                <span class="text-danger" style="font-weight:bold;margin-right:3px"> * </span>
+                <label for="City" style="font-weight:bold">CITY</label>
+                <select name="City" class="form-control">
+                    <option value="1">Male</option>
+                    <option value="2">Female</option>
+
+                </select>
+
+            </div>
+        </form>
+
+    </div>
+</div>

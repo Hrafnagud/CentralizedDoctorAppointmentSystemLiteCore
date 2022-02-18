@@ -10,7 +10,7 @@
             </button>
             <div class="collapse navbar-collapse justify-content-end" id="navbar-wd">
                 <ul class="navbar-nav">
-                    <li><a class="nav-link btn btn-default" style="background-color:#46B3AE; color:white;margin-right:5px" href="#home">Book Appointment</a></li>
+                    <li><a class="nav-link btn btn-default" style="background-color:#46B3AE; color:white;margin-right:5px" href="/Patient/Index">Book Appointment</a></li>
                     @if (SignInManager.IsSignedIn(Context.User))
                     {
                         string name = SignInManager.UserManager.FindByNameAsync(Context.User.Identity.Name).Result.Name;
