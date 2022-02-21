@@ -49,7 +49,6 @@
         </div>
     </div>end loader -->
     <!-- END LOADER -->
-
     <!-- Start header -->
     <partial name="Partials/_HeaderPartial" />   <!--Cut content then paste it to _HeaderPartial and state here.-->
     <!-- End header -->
@@ -61,7 +60,6 @@
             </div>
         </div>
     </div>
-    <partial name="Partials/_FooterPartial" />
     <!-- End About us -->
 
 
@@ -84,7 +82,9 @@
     <script src="~/health-theme-assets/js/isotope.min.js"></script>
     <script src="~/health-theme-assets/js/images-loded.min.js"></script>
     <script src="~/health-theme-assets/js/custom.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
     @RenderSection("Scripts", false)
     @*@await RenderSectionAsync("Scripts", false)*@ <!--Asynchronous version-->
 </body>
+<partial name="Partials/_FooterPartial" />
 </html>
