@@ -58,25 +58,6 @@
 
     </div>
 </div>
-@section Scripts{
-    <script>
-        $('#CitySelect').on('change', function () {
-            var cityId = this.value;
-            if (cityId > 0) {
-                $.ajax({
-                    type: "GET",
-                    url: '/City/GetCityDistricts/' + id,
-                    success: function (res) {
-
-                    },
-                    error: function (err) {
-                        console.log(err);
-                    },
-                });
-            }
-        });
-    </script>
-}
 
 @section Scripts{
     <script>
