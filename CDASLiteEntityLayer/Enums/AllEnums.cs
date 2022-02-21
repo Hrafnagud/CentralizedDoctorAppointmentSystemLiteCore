@@ -21,6 +21,8 @@ namespace CDASLiteEntityLayer.Enums
     {
         Passive,
         Admin,
-        Patient
+        Patient,
+        PassiveDoctor,
+        ActiveDoctor
     }
 }

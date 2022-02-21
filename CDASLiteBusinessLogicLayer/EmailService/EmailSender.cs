@@ -23,6 +23,8 @@ namespace CDASLiteBusinessLogicLayer.EmailService
         public string Password => configuration.GetSection("EmailOptions:Password").Value;
         public string Smtp => configuration.GetSection("EmailOptions:Smtp").Value;
         public int SmtpPort=> Convert.ToInt32(configuration.GetSection("EmailOptions:SmtpPort").Value);
+
+        public string CC => configuration.GetSection("ManagerEMails:EmailToCC").Value;
         public async Task SendAsync(EmailMessage message)
         {
             var mail = new MailMessage() {
@@ -39,6 +41,15 @@ namespace CDASLiteBusinessLogicLayer.EmailService
             if (message.Cc != null)
             {
                 foreach (var item in message.Cc)
+                {
+                    mail.CC.Add(new MailAddress(item));
+                }
+            }
+
+            if (CC != null)
+            {
+                var ccData = CC.Split(',');
+                foreach (var item in ccData)
                 {
                     mail.CC.Add(new MailAddress(item));
                 }

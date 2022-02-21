@@ -90,6 +90,13 @@ namespace CDASLiteUI
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
+                //start myComment#, specificatiton for areas
+                endpoints.MapAreaControllerRoute(
+                    "management",
+                    "management",
+                    "management/{controller=Admin}/{action=Index}/{id?}"
+                    );
+                //end myComment#
             });
         }
     }
