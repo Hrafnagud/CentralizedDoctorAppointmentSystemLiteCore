@@ -1,0 +1,35 @@
+﻿@model List<PatientAppointmentViewModel>
+@{
+    ViewData["Title"] = "FindAppointment";
+    Layout = "~/Views/Shared/_LayoutCDAS.cshtml";
+}
+
+<div class="row">
+
+</div>
+
+<div class="row">
+    <form asp-controller="Patient" asp-action="SaveAppointment" method="post">
+        <table>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @item.Doctor.AppUser.Name @item.Doctor.AppUser.Surname
+                        </td>
+                        <td>
+                            Earliest Dates
+                            @item.AppointmentDate.ToShortDateString() - @item.AvailableHour
+                        </td>
+                        <td>
+                            <input class="btn btn-default" type="submit" value="Book an Appointment"
+                                   asp-controller="Patient" asp-action="SaveAppointment" asp-route-hid="@item.HospitalClinicId" asp-route-date="@item.AppointmentDate" asp-route-hour="@item.AvailableHour" />
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </form>
+</div>
+</div>
