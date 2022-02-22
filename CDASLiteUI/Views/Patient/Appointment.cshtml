@@ -175,13 +175,22 @@
         });
         // randevu ara butonuna tıklandığında seçili hastane ve kliniğe ait müsait randevular ekrana gelecek...
         $('#randevuAra').on('click', function () {
+            //id of chosen city
+            var cityid = $('#CitySelect').val();
+            //id of chosen district
+            var distid = $('#DistrictSelect').val();
             //seçili hospitalın idsi
             var hid = $("#HospitalSelect").val();
             //seçili kliniğin idsi
             var cid = $("#ClinicSelect").val();
+            //id of chosen doctor
+            //var dr = $('#DoctorSelect').val();
+
+            //city*, district, clinic*, hospital, doctor
 
             //yeni pencerede müsait randevular listelenecek.
-            window.open('/Patient/FindAppointment?hid=' + hid + '&cid=' + cid);
+            //window.open('/Patient/FindAppointment=cty=' + cityid + '&dst=' + distid+ '&cid=' + cid + '&hid=' + hid + 'dr=' + dr);
+            window.open('/Patient/FindAppointment=cty=' + cityid + '&dst=' + distid + '&cid=' + cid + '&hid=' + hid);
 
         });
 
