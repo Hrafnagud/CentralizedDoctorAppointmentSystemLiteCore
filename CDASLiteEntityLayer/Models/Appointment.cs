@@ -11,9 +11,9 @@ namespace CDASLiteEntityLayer.Models
     [Table("Appointments")]
     public class Appointment : Base<int>
     {
+        [Required]
         public string PatientId { get; set; }
         [ForeignKey("PatientId")]
-
         public int HospitalClinicId { get; set; }
         [ForeignKey("HospitalClinicId")]
 
