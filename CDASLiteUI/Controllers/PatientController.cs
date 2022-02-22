@@ -1,6 +1,7 @@
 ﻿using CDASLiteBusinessLogicLayer.Contracts;
 using CDASLiteBusinessLogicLayer.EmailService;
 using CDASLiteEntityLayer.IdentityModels;
+using CDASLiteEntityLayer.Models;
 using CDASLiteUI.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -99,6 +100,40 @@ namespace CDASLiteUI.Controllers
             catch (Exception)
             {
                 throw;
+            }
+        }
+
+        [Authorize]
+        public IActionResult SaveAppointment(int hid, string date, string hour)
+        {
+            try
+            {
+
+                //Check whether an appointment exists for the exact same time interval
+                DateTime appointmentDate = Convert.ToDateTime(date);
+                if (unitOfWork.AppointmentRepository.GetFirstOrDefault(x => x.AppointmentDate == appointmentDate && x.AppointmentHour == hour) != null)
+                {
+                    TempData["SaveAppointmentStatus"] = $"You have already booked an appointment for the following date {date} - {hour}.";
+                    return RedirectToAction("Index", "Patient");
+                }
+                //save appointment
+                Appointment patientAppointment = new Appointment()
+                {
+                    CreatedDate = DateTime.Now,
+                    PatientId = HttpContext.User.Identity.Name,
+                    HospitalClinicId = hid,
+                    AppointmentDate = appointmentDate,
+                    AppointmentHour = hour,
+                    
+                };
+                var result = unitOfWork.AppointmentRepository.Add(patientAppointment);
+                TempData["SaveAppointmentStatus"] = result ? "Appointment has been successfully booked." : "An unexpected error has occured";
+                return RedirectToAction("Index", "Patient");
+            }
+            catch (Exception ex)
+            {
+                TempData["SaveAppointmentStatus"] = $"Error: {ex.Message}";
+                return RedirectToAction("Index", "Patient");
             }
         }
     }

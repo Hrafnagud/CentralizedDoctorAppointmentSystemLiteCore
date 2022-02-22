@@ -24,7 +24,7 @@
                         </td>
                         <td>
                             <input class="btn btn-default" type="submit" value="Book an Appointment"
-                                   asp-controller="Patient" asp-action="SaveAppointment" asp-route-hid="@item.HospitalClinicId" asp-route-date="@item.AppointmentDate" asp-route-hour="@item.AvailableHour" />
+                                   asp-controller="Patient" asp-action="SaveAppointment" asp-route-hid="@item.HospitalClinicId" asp-route-date="@item.AppointmentDate.ToShortDateString()" asp-route-hour="@item.AvailableHour" />
                         </td>
                     </tr>
                 }
