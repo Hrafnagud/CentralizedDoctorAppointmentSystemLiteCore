@@ -12,14 +12,14 @@
     @*geri butonu*@
 </div>
 <div class="row">
-    <form asp-controller="Patient" asp-action="SaveAppointment" method="post">
+    <form asp-controller="Patient" asp-action="FindAppointmentHours" method="post">
         <div class="list-group">
 
             @foreach (var item in Model)
             {
-                <a href="#" class="list-group-item list-group-item-action col-md-12" style="justify-content:space-between">
+                <a asp-controller="Patient" asp-action="FindAppointmentHours" asp-route-hcid="@item.HospitalClinicId" class="list-group-item list-group-item-action col-md-12" style="justify-content:space-between">
                     <span class="col-md-3">
-                        @item.Doctor.AppUser.Name
+                    @item.Doctor.AppUser.Name
                     @item.Doctor.AppUser.Surname
                 </span>
                 <strong class="col-md-1">

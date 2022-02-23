@@ -184,6 +184,71 @@ namespace CDASLiteUI.Controllers
         }
 
         [Authorize]
+        public IActionResult FindAppointmentHours(int hcid)
+        {
+            try
+            {
+                var list = new List<AvailableDoctorAppointmentHoursViewModel>();
+
+                var data = unitOfWork.AppointmentHourRepository
+                     .GetFirstOrDefault(x => x.HospitalClinicId == hcid);
+                var hospitalClinicData =
+                         unitOfWork.HospitalClinicRepository
+                         .GetFirstOrDefault(x => x.Id == hcid);
+
+                var hours = data.Hours.Split(',');
+                var appointment = unitOfWork
+                    .AppointmentRepository
+                    .GetAll(
+                    x => x.HospitalClinicId == hcid
+                    &&
+                    (x.AppointmentDate > DateTime.Now.AddDays(-1)
+                    &&
+                    x.AppointmentDate < DateTime.Now.AddDays(2)
+                    )
+                    ).ToList();
+                foreach (var houritem in hours)
+                {
+                    string myHourBase = houritem.Substring(0, 2) + ":00";
+                    var appointmentHourData =
+                        new AvailableDoctorAppointmentHoursViewModel()
+                        {
+                            AppointmentDate = DateTime.Now.AddDays(1),
+                            Doctor =
+                               unitOfWork.DoctorReposittory
+                               .GetFirstOrDefault(x => x.TRID == hospitalClinicData.DoctorId),
+                            HourBase = myHourBase
+                        };
+                    list.Add(appointmentHourData);
+                    if (appointment.Count(
+                        x =>
+                        x.AppointmentDate == (
+                        Convert.ToDateTime(DateTime.Now.AddDays(1).ToShortDateString())) &&
+                        x.AppointmentHour == houritem
+                        ) == 0)
+                    {
+                        if (list.Count(x => x.HourBase == myHourBase) > 0)
+                        {
+                            appointmentHourData.Hours.Add(houritem);
+                        }
+                    }
+
+                }
+
+                list = list.Distinct().ToList();
+                return View(list);
+
+
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
+        }
+
+        [Authorize]
         public IActionResult SaveAppointment(int hid, string date, string hour)
         {
             try
