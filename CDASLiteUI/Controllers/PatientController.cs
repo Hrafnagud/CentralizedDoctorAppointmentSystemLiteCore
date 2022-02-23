@@ -62,7 +62,7 @@ namespace CDASLiteUI.Controllers
         }
 
         [Authorize]
-        public IActionResult FindAppointment(int cityid, int? distid, int cid, int? hid, int? dr){
+        public IActionResult FindAppointmentOldVersion(int cityid, int? distid, int cid, int? hid, int? dr){
             try
             {
                 //Receive HospitalClinic from obtained clinicid
@@ -101,6 +101,86 @@ namespace CDASLiteUI.Controllers
             {
                 throw;
             }
+        }
+
+        [Authorize]
+        public IActionResult FindAppointment(int cityid, int? distid, int cid, int? hid, int? dr)
+        {
+            try
+            {
+                //Dışarıdan gelen hid ve clinicid'nin olduğu HospitalClinic kayıtlarını al
+                var data = unitOfWork.HospitalClinicRepository
+                    .GetAll(x => x.ClinicId == cid
+                    && x.HospitalId == hid.Value)
+                    .Select(a => a.AppointmentHours)
+                    .ToList();
+
+                var list = new List<AvailableDoctorAppointmentViewModel>();
+
+                foreach (var item in data)
+                {
+                    foreach (var subitem in item)
+                    {
+                        var hospitalClinicData =
+                            unitOfWork.HospitalClinicRepository
+                            .GetFirstOrDefault(x => x.Id == subitem.HospitalClinicId);
+
+                        var hours = subitem.Hours.Split(',');
+                        var appointment = unitOfWork
+                            .AppointmentRepository
+                            .GetAll(
+                            x => x.HospitalClinicId == subitem.HospitalClinicId
+                            &&
+                            (x.AppointmentDate > DateTime.Now.AddDays(-1)
+                            &&
+                            x.AppointmentDate < DateTime.Now.AddDays(2)
+                            )
+                            ).ToList();
+                        foreach (var houritem in hours)
+                        {
+                            if (appointment.Count(
+                                x =>
+                                x.AppointmentDate == (
+                                Convert.ToDateTime(DateTime.Now.AddDays(1).ToShortDateString())) &&
+                                x.AppointmentHour == houritem
+                                ) == 0)
+                            {
+
+                                list.Add(new AvailableDoctorAppointmentViewModel()
+                                {
+                                    HospitalClinicId = subitem.HospitalClinicId,
+                                    ClinicId = hospitalClinicData.ClinicId,
+                                    HospitalId = hospitalClinicData.HospitalId,
+                                    DoctorTRID = hospitalClinicData.DoctorId,
+                                    Doctor = unitOfWork.DoctorReposittory
+                                    .GetFirstOrDefault(x => x.TRID ==
+                                    hospitalClinicData.DoctorId, includeProperties: "AppUser"),
+                                    Hospital = unitOfWork.HospitalRepository
+                                    .GetFirstOrDefault(x => x.Id ==
+                                    hospitalClinicData.HospitalId),
+                                    Clinic = unitOfWork.ClinicRepository
+                                    .GetFirstOrDefault(x => x.Id == hospitalClinicData.ClinicId),
+                                    HospitalClinic = hospitalClinicData
+                                });
+                                break;
+                            }
+
+                        }
+
+                    }
+                }
+
+                list = list.Distinct().OrderBy(x => x.Doctor.AppUser.Name).ToList();
+                return View(list);
+
+
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
         }
 
         [Authorize]
