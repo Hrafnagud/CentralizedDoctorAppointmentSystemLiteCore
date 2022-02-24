@@ -108,6 +108,8 @@ namespace CDASLiteUI.Controllers
         {
             try
             {
+                TempData["ClinicId"] = cid;
+                TempData["HospitalId"] = hid.Value;
                 //Dışarıdan gelen hid ve clinicid'nin olduğu HospitalClinic kayıtlarını al
                 var data = unitOfWork.HospitalClinicRepository
                     .GetAll(x => x.ClinicId == cid
@@ -188,15 +190,23 @@ namespace CDASLiteUI.Controllers
         {
             try
             {
+
                 var list = new List<AvailableDoctorAppointmentHoursViewModel>();
 
-                var data = unitOfWork.AppointmentHourRepository
-                     .GetFirstOrDefault(x => x.HospitalClinicId == hcid);
+                var data = unitOfWork.
+                    AppointmentHourRepository.
+                    GetFirstOrDefault(x => x.HospitalClinicId == hcid);
+
                 var hospitalClinicData =
                          unitOfWork.HospitalClinicRepository
                          .GetFirstOrDefault(x => x.Id == hcid);
+                Doctor dr = unitOfWork.DoctorReposittory
+                    .GetFirstOrDefault(x => x.TRID == hospitalClinicData.DoctorId
+                    , includeProperties: "AppUser");
+                ViewBag.Doctor = "Dr." + dr.AppUser.Name + " " + dr.AppUser.Surname;
 
                 var hours = data.Hours.Split(',');
+
                 var appointment = unitOfWork
                     .AppointmentRepository
                     .GetAll(
@@ -207,18 +217,18 @@ namespace CDASLiteUI.Controllers
                     x.AppointmentDate < DateTime.Now.AddDays(2)
                     )
                     ).ToList();
+
                 foreach (var houritem in hours)
                 {
                     string myHourBase = houritem.Substring(0, 2) + ":00";
                     var appointmentHourData =
-                        new AvailableDoctorAppointmentHoursViewModel()
-                        {
-                            AppointmentDate = DateTime.Now.AddDays(1),
-                            Doctor =
-                               unitOfWork.DoctorReposittory
-                               .GetFirstOrDefault(x => x.TRID == hospitalClinicData.DoctorId),
-                            HourBase = myHourBase
-                        };
+                      new AvailableDoctorAppointmentHoursViewModel()
+                      {
+                          AppointmentDate = DateTime.Now.AddDays(1),
+                          Doctor = dr,
+                          HourBase = myHourBase,
+                          HospitalClinicId = hcid
+                      };
                     list.Add(appointmentHourData);
                     if (appointment.Count(
                         x =>
@@ -227,29 +237,27 @@ namespace CDASLiteUI.Controllers
                         x.AppointmentHour == houritem
                         ) == 0)
                     {
-                        if (list.Count(x => x.HourBase == myHourBase) > 0)
-                        {
-                            appointmentHourData.Hours.Add(houritem);
-                        }
+                        //if (list.Count(x => x.HourBase == myHourBase) > 0)
+                        //{
+                        //    appointmentHourData.Hours.Add(houritem);
+                        //}
+                        appointmentHourData.Hours.Add(houritem);
                     }
 
+
                 }
-
-                list = list.Distinct().ToList();
                 return View(list);
-
-
             }
             catch (Exception)
             {
 
                 throw;
             }
-
         }
 
+
         [Authorize]
-        public IActionResult SaveAppointment(int hid, string date, string hour)
+        public IActionResult SaveAppointment(int hcid, string date, string hour)
         {
             try
             {
@@ -266,7 +274,7 @@ namespace CDASLiteUI.Controllers
                 {
                     CreatedDate = DateTime.Now,
                     PatientId = HttpContext.User.Identity.Name,
-                    HospitalClinicId = hid,
+                    HospitalClinicId = hcid,
                     AppointmentDate = appointmentDate,
                     AppointmentHour = hour,
                     
