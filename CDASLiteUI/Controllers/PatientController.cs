@@ -205,6 +205,7 @@ namespace CDASLiteUI.Controllers
                     , includeProperties: "AppUser");
                 ViewBag.Doctor = "Dr." + dr.AppUser.Name + " " + dr.AppUser.Surname;
 
+
                 var hours = data.Hours.Split(',');
 
                 var appointment = unitOfWork
@@ -229,7 +230,10 @@ namespace CDASLiteUI.Controllers
                           HourBase = myHourBase,
                           HospitalClinicId = hcid
                       };
-                    list.Add(appointmentHourData);
+                    if (list.Count(x => x.HourBase == myHourBase) == 0)
+                    {
+                        list.Add(appointmentHourData);
+                    }
                     if (appointment.Count(
                         x =>
                         x.AppointmentDate == (
@@ -237,14 +241,12 @@ namespace CDASLiteUI.Controllers
                         x.AppointmentHour == houritem
                         ) == 0)
                     {
-                        //if (list.Count(x => x.HourBase == myHourBase) > 0)
-                        //{
-                        //    appointmentHourData.Hours.Add(houritem);
-                        //}
-                        appointmentHourData.Hours.Add(houritem);
+                        if (list.Count(x => x.HourBase == myHourBase) > 0)
+                        {
+                            list.Find(x => x.HourBase == myHourBase
+                                ).Hours.Add(houritem);
+                        }
                     }
-
-
                 }
                 return View(list);
             }
@@ -254,6 +256,7 @@ namespace CDASLiteUI.Controllers
                 throw;
             }
         }
+
 
 
         [Authorize]
