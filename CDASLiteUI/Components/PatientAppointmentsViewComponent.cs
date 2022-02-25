@@ -24,7 +24,7 @@ namespace CDASLiteUI.Components
             DateTime today = Convert.ToDateTime(DateTime.Now.ToShortDateString());
             data.UpcomingAppointments = unitOfWork.AppointmentRepository.GetAll(x => x.PatientId == HttpContext.User.Identity.Name && x.AppointmentDate > today || (x.AppointmentDate == today && (Convert.ToInt32(x.AppointmentHour.Substring(0, 2)) > DateTime.Now.Hour || (Convert.ToInt32(x.AppointmentHour.Substring(0, 2)) == DateTime.Now.Hour && Convert.ToInt32(x.AppointmentHour.Substring(3, 2)) >= DateTime.Now.Minute ))), includeProperties: "HospitalClinic").ToList();
 
-            data.PastAppointments = unitOfWork.AppointmentRepository.GetAll(x => x.PatientId == HttpContext.User.Identity.Name && x.AppointmentDate <= today && (x.AppointmentDate == today && (Convert.ToInt32(x.AppointmentHour.Substring(0, 2)) < DateTime.Now.Hour || (Convert.ToInt32(x.AppointmentHour.Substring(0, 2)) == DateTime.Now.Hour && Convert.ToInt32(x.AppointmentHour.Substring(3, 2)) < DateTime.Now.Minute ))), includeProperties: "HospitalClinic").ToList();
+            data.PastAppointments = unitOfWork.AppointmentRepository.GetAll(x => x.PatientId == HttpContext.User.Identity.Name && x.AppointmentDate < today || (x.AppointmentDate == today && (Convert.ToInt32(x.AppointmentHour.Substring(0, 2)) < DateTime.Now.Hour || (Convert.ToInt32(x.AppointmentHour.Substring(0, 2)) == DateTime.Now.Hour && Convert.ToInt32(x.AppointmentHour.Substring(3, 2)) <= DateTime.Now.Minute ))), includeProperties: "HospitalClinic").ToList();
             return View(data);
         }
     }
