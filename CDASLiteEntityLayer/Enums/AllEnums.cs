@@ -25,4 +25,11 @@ namespace CDASLiteEntityLayer.Enums
         PassiveDoctor,
         ActiveDoctor
     }
+
+    public enum AppointmentStatus : byte
+    {
+        Passive,
+        Active,
+        Cancelled
+    }
 }

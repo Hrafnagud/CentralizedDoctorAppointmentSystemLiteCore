@@ -2,7 +2,9 @@ using CDASLiteBusinessLogicLayer.Contracts;
 using CDASLiteBusinessLogicLayer.EmailService;
 using CDASLiteBusinessLogicLayer.Implementations;
 using CDASLiteDataAccessLayer;
+using CDASLiteEntityLayer.Enums;
 using CDASLiteEntityLayer.IdentityModels;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -38,6 +40,11 @@ namespace CDASLiteUI
             //begin #myComment# To solidify IUnitOfWork and EmailSender. If we come across to IUW or IES, their object will be created!
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IEmailSender, EmailSender>();
+            services.AddScoped<IClaimsTransformation, ClaimProvider.ClaimProvider>();
+            services.AddAuthorization(opts =>
+            {
+                opts.AddPolicy("GenderPolicy", policy => policy.RequireClaim("gender", Genders.Male.ToString()));
+            });
             //end myComment#
             services.AddControllersWithViews().AddRazorRuntimeCompilation();    //Razor page changes will be able to compiled without stopping IIS.
             //begin myComment#

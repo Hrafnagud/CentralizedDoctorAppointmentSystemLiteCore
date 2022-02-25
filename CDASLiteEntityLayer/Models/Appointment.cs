@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CDASLiteEntityLayer.Enums;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -23,6 +24,8 @@ namespace CDASLiteEntityLayer.Models
         [Required]
         [StringLength(5, MinimumLength = 5, ErrorMessage = "Appointment Hour format must as follows! => XX:XX")]
         public string AppointmentHour { get; set; }
+
+        public AppointmentStatus AppointmentStatus{ get; set; }
         public virtual Patient Patient{ get; set; }
 
         public virtual HospitalClinic HospitalClinic{ get; set; }

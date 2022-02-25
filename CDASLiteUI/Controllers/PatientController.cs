@@ -1,5 +1,6 @@
 ﻿using CDASLiteBusinessLogicLayer.Contracts;
 using CDASLiteBusinessLogicLayer.EmailService;
+using CDASLiteEntityLayer.Enums;
 using CDASLiteEntityLayer.IdentityModels;
 using CDASLiteEntityLayer.Models;
 using CDASLiteUI.Models;
@@ -280,7 +281,7 @@ namespace CDASLiteUI.Controllers
                     HospitalClinicId = hcid,
                     AppointmentDate = appointmentDate,
                     AppointmentHour = hour,
-                    
+                    AppointmentStatus = AppointmentStatus.Active
                 };
                 var result = unitOfWork.AppointmentRepository.Add(patientAppointment);
                 message = result ? "Appointment has been successfully booked." : "An unexpected error has occured";
