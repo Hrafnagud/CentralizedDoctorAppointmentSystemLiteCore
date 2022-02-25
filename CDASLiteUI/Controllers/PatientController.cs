@@ -260,17 +260,17 @@ namespace CDASLiteUI.Controllers
 
 
         [Authorize]
-        public IActionResult SaveAppointment(int hcid, string date, string hour)
+        public JsonResult SaveAppointment(int hcid, string date, string hour)
         {
+            var message = String.Empty;
             try
             {
-
                 //Check whether an appointment exists for the exact same time interval
                 DateTime appointmentDate = Convert.ToDateTime(date);
                 if (unitOfWork.AppointmentRepository.GetFirstOrDefault(x => x.AppointmentDate == appointmentDate && x.AppointmentHour == hour) != null)
                 {
-                    TempData["SaveAppointmentStatus"] = $"You have already booked an appointment for the following date {date} - {hour}.";
-                    return RedirectToAction("Index", "Patient");
+                    message = $"You have already booked an appointment for the following date {date} - {hour}.";
+                    return Json(new { isSuccess = false, message });
                 }
                 //save appointment
                 Appointment patientAppointment = new Appointment()
@@ -283,13 +283,13 @@ namespace CDASLiteUI.Controllers
                     
                 };
                 var result = unitOfWork.AppointmentRepository.Add(patientAppointment);
-                TempData["SaveAppointmentStatus"] = result ? "Appointment has been successfully booked." : "An unexpected error has occured";
-                return RedirectToAction("Index", "Patient");
+                message = result ? "Appointment has been successfully booked." : "An unexpected error has occured";
+                return result ? Json(new { isSuccess = true, message }) : Json(new { isSuccess = false, message });
             }
             catch (Exception ex)
             {
-                TempData["SaveAppointmentStatus"] = $"Error: {ex.Message}";
-                return RedirectToAction("Index", "Patient");
+                message = $"Error: {ex.Message}";
+                return Json(new { isSuccess = false, message });
             }
         }
     }
