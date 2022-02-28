@@ -1,3 +1,4 @@
+using CDASLiteEntityLayer.Mappings;
 using CDASLiteBusinessLogicLayer.Contracts;
 using CDASLiteBusinessLogicLayer.EmailService;
 using CDASLiteBusinessLogicLayer.Implementations;
@@ -16,6 +17,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 
 namespace CDASLiteUI
 {
@@ -41,6 +43,7 @@ namespace CDASLiteUI
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IEmailSender, EmailSender>();
             services.AddScoped<IClaimsTransformation, ClaimProvider.ClaimProvider>();
+            services.AddAutoMapper(typeof(Maps));
             services.AddAuthorization(opts =>
             {
                 opts.AddPolicy("GenderPolicy", policy => policy.RequireClaim("gender", Genders.Male.ToString()));
