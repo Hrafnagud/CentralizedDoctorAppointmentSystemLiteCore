@@ -1,4 +1,5 @@
 ﻿using CDASLiteEntityLayer;
+using CDASLiteEntityLayer.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,5 +11,8 @@ namespace CDASLiteBusinessLogicLayer.EmailService
     public interface IEmailSender
     {
         Task SendAsync(EmailMessage message);
+
+        void SendAppointmentPDF(EmailMessage message, AppointmentVM data);
+        Task SendAppointmentPDFAsync(EmailMessage message, AppointmentVM data);
     }
 }

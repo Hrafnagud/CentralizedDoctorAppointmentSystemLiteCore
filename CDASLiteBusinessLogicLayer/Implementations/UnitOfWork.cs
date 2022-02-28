@@ -1,5 +1,8 @@
-﻿using CDASLiteBusinessLogicLayer.Contracts;
+﻿using AutoMapper;
+using CDASLiteBusinessLogicLayer.Contracts;
 using CDASLiteDataAccessLayer;
+using CDASLiteEntityLayer.IdentityModels;
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +14,8 @@ namespace CDASLiteBusinessLogicLayer.Implementations
     public class UnitOfWork : IUnitOfWork
     {
         private readonly MyContext myContext;
+        private readonly IMapper mapper;
+        private readonly UserManager<AppUser> userManager;
 
         public UnitOfWork(MyContext myContext)
         {
@@ -24,7 +29,7 @@ namespace CDASLiteBusinessLogicLayer.Implementations
             ClinicRepository = new ClinicRepository(this.myContext);
             HospitalClinicRepository = new HospitalClinicRepository(this.myContext);
             AppointmentHourRepository = new AppointmentHourRepository(this.myContext);
-            AppointmentRepository = new AppointmentRepository(this.myContext);
+            AppointmentRepository = new AppointmentRepository(this.myContext, mapper, userManager);
         }
 
         public ICityRepository CityRepository { get; private set; }
