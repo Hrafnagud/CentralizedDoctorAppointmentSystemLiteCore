@@ -24,3 +24,6 @@ O metot _myContext'i kullanarak işlemi yapsın diy burada _myContext'i protecte
 Örn; İstanbuldaki toplam Dahiliye klinik sayısı 
 Aşağıdaki gibi kullanımlar yapabiliriz.
 var x= from h in _myContext.Hospitals
+
+AutoMapper version 9.0.0
+AutoMapper.Extension 7.0.0
