@@ -1,15 +1,19 @@
 ﻿using CDASLiteBusinessLogicLayer.Contracts;
 using CDASLiteBusinessLogicLayer.EmailService;
+using CDASLiteEntityLayer;
 using CDASLiteEntityLayer.Enums;
 using CDASLiteEntityLayer.IdentityModels;
 using CDASLiteEntityLayer.Models;
 using CDASLiteUI.Models;
+using ClosedXML.Excel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
+using System.Data;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -35,10 +39,12 @@ namespace CDASLiteUI.Controllers
         }
 
         [Authorize]
-        public IActionResult Index()
+        public IActionResult Index(int pageNumberPast = 1, int pageNumberFuture = 1)
         {
             try
             {
+                ViewBag.PageNumberPast = pageNumberPast;
+                ViewBag.PageNumberFuture= pageNumberFuture;
                 return View();
             }
             catch (Exception ex)
@@ -258,8 +264,6 @@ namespace CDASLiteUI.Controllers
             }
         }
 
-
-
         [Authorize]
         public JsonResult SaveAppointment(int hcid, string date, string hour)
         {
@@ -285,12 +289,106 @@ namespace CDASLiteUI.Controllers
                 };
                 var result = unitOfWork.AppointmentRepository.Add(patientAppointment);
                 message = result ? "Appointment has been successfully booked." : "An unexpected error has occured";
+
+                if (result)
+                {
+                    var data = unitOfWork.AppointmentRepository.GetAppointmentByID(HttpContext.User.Identity.Name,
+                        patientAppointment.HospitalClinicId,
+                        patientAppointment.AppointmentDate,
+                        patientAppointment.AppointmentHour);
+
+                    var user = userManager.FindByNameAsync(HttpContext.User.Identity.Name).Result;
+                    var emailMessage = new EmailMessage()
+                    {
+                        Contacts = new string[] { },
+                        Subject = "CDASLITE - Appointment Details",
+                        Body =  $"Hello {user.Name} {user.Surname}, </br>PDF document related with your appointment is attached."
+                    };
+
+                    emailSender.SendAppointmentPDF(emailMessage, data);
+                }
+
                 return result ? Json(new { isSuccess = true, message }) : Json(new { isSuccess = false, message });
             }
             catch (Exception ex)
             {
                 message = $"Error: {ex.Message}";
                 return Json(new { isSuccess = false, message });
+            }
+        }
+
+        [Authorize]
+        public JsonResult CancelAppointment(int id)
+        {
+            var message = string.Empty;
+            try
+            {
+                var appointment = unitOfWork.AppointmentRepository.GetFirstOrDefault(x => x.Id == id);
+
+                if (appointment != null)
+                {
+                    appointment.AppointmentStatus = AppointmentStatus.Passive;
+                    var result = unitOfWork.AppointmentRepository.Update(appointment);
+                    message = result ? "Appointment has been cancelled" : "An unexpected error has occured";
+                    return result ? Json(new { isSuccess = true, message }) : Json(new { isSuccess = false, message });
+                }
+                else
+                {
+                    message = "ERROR: Since an appointment couldn't be found, cancellation failed. Try again!";
+                    return Json(new { isSuccess = false, message });
+                }
+            }
+            catch (Exception ex)
+            {
+                message = "ERROR: " + ex.Message;
+                return Json(new { isSuccess = false, message });
+            }
+        }
+
+        [Authorize]
+        [HttpPost]
+        public IActionResult UpcomingAppointmentsExcelExport()
+        {
+            try
+            {
+                DataTable dataTable = new DataTable();
+                var patientId = HttpContext.User.Identity.Name;
+                var data = unitOfWork.AppointmentRepository.GetUpcomingAppointments(patientId);
+                dataTable.Columns.Add("CITY");
+                dataTable.Columns.Add("DISTRICT");
+                dataTable.Columns.Add("HOSPITAL");
+                dataTable.Columns.Add("CLINIC");
+                dataTable.Columns.Add("DOCTOR");
+                dataTable.Columns.Add("APPOINTMENT DATE");
+                dataTable.Columns.Add("APPOINTMENT HOUR");
+
+                foreach (var item in data)
+                {
+                    var doctor = item.HospitalClinic.Doctor.AppUser.Name + " " + item.HospitalClinic.Doctor.AppUser.Surname;
+                    dataTable.Rows.Add( item.HospitalClinic.Hospital.HospitalDistrict.City.CityName,
+                                        item.HospitalClinic.Hospital.HospitalDistrict.DistrictName,
+                                        item.HospitalClinic.Hospital.HospitalName,
+                                        item.HospitalClinic.Clinic.ClinicName,
+                                        doctor,
+                                        item.AppointmentDate,
+                                        item.AppointmentHour
+                        );
+                }
+                //Create Excel
+                using (XLWorkbook wb = new XLWorkbook())
+                {
+                    wb.Worksheets.Add(dataTable);
+                    using (MemoryStream stream = new MemoryStream())
+                    {
+                        wb.SaveAs(stream);
+                        return File(stream.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Grid.xlsx");
+                    }
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
             }
         }
     }

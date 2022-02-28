@@ -1,4 +1,6 @@
 ﻿using CDASLiteBusinessLogicLayer.Contracts;
+using CDASLiteEntityLayer.PagingListModels;
+using CDASLiteEntityLayer.ViewModels;
 using CDASLiteUI.Models;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -18,13 +20,23 @@ namespace CDASLiteUI.Components
             this.unitOfWork = unitOfWork;
         }
 
-        public IViewComponentResult Invoke()
+        public IViewComponentResult Invoke(int pageNumberPast = 1, int pageNumberFuture = 1)
         {
             PastAndFutureAppointmentsViewModel data = new PastAndFutureAppointmentsViewModel();
             DateTime today = Convert.ToDateTime(DateTime.Now.ToShortDateString());
-            data.UpcomingAppointments = unitOfWork.AppointmentRepository.GetAll(x => x.PatientId == HttpContext.User.Identity.Name && x.AppointmentDate > today || (x.AppointmentDate == today && (Convert.ToInt32(x.AppointmentHour.Substring(0, 2)) > DateTime.Now.Hour || (Convert.ToInt32(x.AppointmentHour.Substring(0, 2)) == DateTime.Now.Hour && Convert.ToInt32(x.AppointmentHour.Substring(3, 2)) >= DateTime.Now.Minute ))), includeProperties: "HospitalClinic").ToList();
+            var patientId = HttpContext.User.Identity.Name;
 
-            data.PastAppointments = unitOfWork.AppointmentRepository.GetAll(x => x.PatientId == HttpContext.User.Identity.Name && x.AppointmentDate < today || (x.AppointmentDate == today && (Convert.ToInt32(x.AppointmentHour.Substring(0, 2)) < DateTime.Now.Hour || (Convert.ToInt32(x.AppointmentHour.Substring(0, 2)) == DateTime.Now.Hour && Convert.ToInt32(x.AppointmentHour.Substring(3, 2)) <= DateTime.Now.Minute ))), includeProperties: "HospitalClinic").ToList();
+            //Active Appointments
+            var upcomingAppointments = unitOfWork.AppointmentRepository.GetUpcomingAppointments(patientId);
+            data.UpcomingAppointments = PaginatedList<AppointmentVM>.CreateAsync(upcomingAppointments, pageNumberFuture, 5);
+
+            var pastAndCancelledAppointments = unitOfWork.AppointmentRepository.GetPastAppointments(patientId);
+            data.UpcomingAppointments = PaginatedList<AppointmentVM>.CreateAsync(pastAndCancelledAppointments, pageNumberPast, 5);
+
+
+            //data.UpcomingAppointments = unitOfWork.AppointmentRepository.GetAll(x => x.PatientId == HttpContext.User.Identity.Name && x.AppointmentDate > today || (x.AppointmentDate == today && (Convert.ToInt32(x.AppointmentHour.Substring(0, 2)) > DateTime.Now.Hour || (Convert.ToInt32(x.AppointmentHour.Substring(0, 2)) == DateTime.Now.Hour && Convert.ToInt32(x.AppointmentHour.Substring(3, 2)) >= DateTime.Now.Minute ))), includeProperties: "HospitalClinic").ToList();
+
+            //data.PastAppointments = unitOfWork.AppointmentRepository.GetAll(x => x.PatientId == HttpContext.User.Identity.Name && x.AppointmentDate < today || (x.AppointmentDate == today && (Convert.ToInt32(x.AppointmentHour.Substring(0, 2)) < DateTime.Now.Hour || (Convert.ToInt32(x.AppointmentHour.Substring(0, 2)) == DateTime.Now.Hour && Convert.ToInt32(x.AppointmentHour.Substring(3, 2)) <= DateTime.Now.Minute ))), includeProperties: "HospitalClinic").ToList();
             return View(data);
         }
     }
