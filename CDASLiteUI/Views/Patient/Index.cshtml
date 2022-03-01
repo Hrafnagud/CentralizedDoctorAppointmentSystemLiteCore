@@ -29,7 +29,7 @@
                 </div>
             </div>
             <div class="col-md-8" style="padding-top:30px;">
-                @await Component.InvokeAsync("PatientAppointments")
+                @await Component.InvokeAsync("PatientAppointments", new { pageNumberPast = ViewBag.PageNumberPast, pageNumberFuture = ViewBag.PageNumberFuture })
             </div>
 
 
