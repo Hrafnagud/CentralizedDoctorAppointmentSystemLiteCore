@@ -351,7 +351,7 @@ namespace CDASLiteUI.Controllers
         {
             try
             {
-                DataTable dataTable = new DataTable();
+                DataTable dataTable = new DataTable("Grid");
                 var patientId = HttpContext.User.Identity.Name;
                 var data = unitOfWork.AppointmentRepository.GetUpcomingAppointments(patientId);
                 dataTable.Columns.Add("CITY");

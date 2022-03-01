@@ -31,9 +31,54 @@
             <div class="col-md-8" style="padding-top:30px;">
                 @await Component.InvokeAsync("PatientAppointments", new { pageNumberPast = ViewBag.PageNumberPast, pageNumberFuture = ViewBag.PageNumberFuture })
             </div>
-
-
-
         </div>
     </div>
 </div>
+
+@section Scripts{
+    <script type="text/javascript">
+        //arrow function
+        function CancelAppointmentBtnClicked(id) {
+            Swal.fire({
+                title: 'Are you sure you would like to cancel your appointment?',
+                showDenyButton: false,
+                showConfirmButton: true,
+                confirmButtonText: 'Confirm',
+                cancelButtonText: 'Cancel',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    //Call appointment cancel action.
+                    $.ajax({
+                        type: "GET",
+                        url: '/Patient/CancelAppointment/' + id,
+                        success: function (res) {
+                            Swal.fire({
+                                title: res.message,
+                                showDenyButton: false,
+                                showCancelButton:false
+                            }).then((result) => {
+                                window.open("/Patient/Index", "_self");
+                            });
+                        },
+                        error: function(err) {
+                            Swal.fire(err, '', 'danger');
+                        }
+                    });
+                }
+            });
+        }
+
+        function UpcomingAppointmentsExcelExportBtnClicked() {
+            $.ajax({
+                type: "POST",
+                url: '/Patient/UpcomingAppointmentsExcelExport',
+                success: function (res) {
+
+                },
+                error: function (err) {
+                    Swal.fire(err, '', 'danger');
+                }
+            });
+        }
+    </script>
+}

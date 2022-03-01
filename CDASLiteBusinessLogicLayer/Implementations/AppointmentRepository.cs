@@ -28,7 +28,7 @@ namespace CDASLiteBusinessLogicLayer.Implementations
         {
             try
             {
-                var data = GetFirstOrDefault(x => x.PatientId == patientId && x.HospitalClinicId == hcid && x.AppointmentDate == appointmentDate && x.AppointmentHour== appointmentHour, includeProperties: "HospitalClinic, Patient");
+                var data = GetFirstOrDefault(x => x.PatientId == patientId && x.HospitalClinicId == hcid && x.AppointmentDate == appointmentDate && x.AppointmentHour== appointmentHour, includeProperties: "HospitalClinic,Patient");
                 if (data != null)
                 {
                     //Hospital
@@ -60,7 +60,7 @@ namespace CDASLiteBusinessLogicLayer.Implementations
         {
             try
             {
-                var data = GetAll(x => x.PatientId == patientId && x.AppointmentStatus != AppointmentStatus.Active, includeProperties:"HospitalClinic, Patient").ToList();
+                var data = GetAll(x => x.PatientId == patientId && x.AppointmentStatus != AppointmentStatus.Active, includeProperties: "HospitalClinic,Patient").ToList();
                 foreach (var item in data)
                 {
                     //Hospital
@@ -90,7 +90,7 @@ namespace CDASLiteBusinessLogicLayer.Implementations
         {
             try
             {
-                var data = GetAll(x => x.PatientId == patientId && x.AppointmentStatus == AppointmentStatus.Active, includeProperties: "HospitalClinic, Patient").ToList();
+                var data = GetAll(x => x.PatientId == patientId && x.AppointmentStatus == AppointmentStatus.Active, includeProperties: "HospitalClinic,Patient").ToList();
                 foreach (var item in data)
                 {
                     //Hospital

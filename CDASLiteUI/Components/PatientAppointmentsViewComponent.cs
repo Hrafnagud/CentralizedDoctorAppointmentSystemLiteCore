@@ -31,7 +31,7 @@ namespace CDASLiteUI.Components
             data.UpcomingAppointments = PaginatedList<AppointmentVM>.CreateAsync(upcomingAppointments, pageNumberFuture, 5);
 
             var pastAndCancelledAppointments = unitOfWork.AppointmentRepository.GetPastAppointments(patientId);
-            data.UpcomingAppointments = PaginatedList<AppointmentVM>.CreateAsync(pastAndCancelledAppointments, pageNumberPast, 5);
+            data.PastAppointments = PaginatedList<AppointmentVM>.CreateAsync(pastAndCancelledAppointments, pageNumberPast, 5);
 
 
             //data.UpcomingAppointments = unitOfWork.AppointmentRepository.GetAll(x => x.PatientId == HttpContext.User.Identity.Name && x.AppointmentDate > today || (x.AppointmentDate == today && (Convert.ToInt32(x.AppointmentHour.Substring(0, 2)) > DateTime.Now.Hour || (Convert.ToInt32(x.AppointmentHour.Substring(0, 2)) == DateTime.Now.Hour && Convert.ToInt32(x.AppointmentHour.Substring(3, 2)) >= DateTime.Now.Minute ))), includeProperties: "HospitalClinic").ToList();

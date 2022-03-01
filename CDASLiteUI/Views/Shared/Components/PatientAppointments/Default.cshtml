@@ -81,8 +81,8 @@
                 </tbody>
             </table>
             @* prev and next pages *@
-            <a asp-controller="Patient" asp-action="Index" asp-route-pageNumberFuture="@(Model.UpcomingAppointments.PageIndex-1)" class="btn @prevDisabledForUpcoming" style="float:right">Previous Page</a>
-            <a asp-controller="Patient" asp-action="Index" asp-route-pageNumberFuture="@(Model.UpcomingAppointments.PageIndex+1)" class="btn @nextDisabledForPast" style="float:left">Next Page</a>
+            <a asp-controller="Patient" asp-action="Index" asp-route-pageNumberFuture="@(Model.UpcomingAppointments.PageIndex-1)" class="btn @prevDisabledForUpcoming" style="float:left">Previous Page</a>
+            <a asp-controller="Patient" asp-action="Index" asp-route-pageNumberFuture="@(Model.UpcomingAppointments.PageIndex+1)" class="btn @nextDisabledForPast" style="float:right">Next Page</a>
 
         </div>
         <div class="tab-pane fade" id="myPastAppointments">
@@ -96,6 +96,12 @@
                                     <span style="background: #fafafa; border: 1px solid #d9d9d9; border-radius: 5px; background-color: rgb(45, 183, 245); color:#fff; padding:5px;">
                                         @item.AppointmentDate.ToShortDateString() - @item.AppointmentHour
                                     </span>
+                                    @if (item.AppointmentStatus == CDASLiteEntityLayer.Enums.AppointmentStatus.Cancelled)
+                                    {
+                                        <span style="background: #fafafa; border: 1px solid #d9d9d9; border-radius: 5px; background-color: red; color:#fff; padding: 5px;">
+                                            Cancelled
+                                        </span>
+                                    }
                                 </strong><br />
                             </td>
                             <td>
@@ -108,8 +114,8 @@
                 </tbody>
             </table>
 
-            <a asp-controller="Patient" asp-action="Index" asp-route-pageNumberPast="@(Model.PastAppointments.PageIndex-1)" class="btn @prevDisabledForPast" style="float:right">Previous Page</a>
-            <a asp-controller="Patient" asp-action="Index" asp-route-pageNumberPast="@(Model.PastAppointments.PageIndex+1)" class="btn @nextDisabledForPast" style="float:left">Next Page</a>
+            <a asp-controller="Patient" asp-action="Index" asp-route-pageNumberPast="@(Model.PastAppointments.PageIndex-1)" class="btn @prevDisabledForPast" style="float:left">Previous Page</a>
+            <a asp-controller="Patient" asp-action="Index" asp-route-pageNumberPast="@(Model.PastAppointments.PageIndex+1)" class="btn @nextDisabledForPast" style="float:right">Next Page</a>
 
         </div>
     </div>

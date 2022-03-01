@@ -17,9 +17,11 @@ namespace CDASLiteBusinessLogicLayer.Implementations
         private readonly IMapper mapper;
         private readonly UserManager<AppUser> userManager;
 
-        public UnitOfWork(MyContext myContext)
+        public UnitOfWork(MyContext myContext, IMapper mapper, UserManager<AppUser> userManager)
         {
             this.myContext = myContext;
+            this.mapper = mapper;
+            this.userManager = userManager;
             //Unit of work will be able to create all repositories! Dependancy Injection!
             CityRepository = new CityRepository(this.myContext);
             DistrictRepository = new DistrictRepository(this.myContext);
