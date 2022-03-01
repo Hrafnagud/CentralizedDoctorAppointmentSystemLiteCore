@@ -16,6 +16,7 @@ namespace CDASLiteEntityLayer.PagingListModels
         {
             PageIndex = pageIndex;
             TotalPages = (int)Math.Ceiling(count / (double)pageSize);
+            this.AddRange(items);
             ItemList = items;
         }
 
