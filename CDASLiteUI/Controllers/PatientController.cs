@@ -224,6 +224,7 @@ namespace CDASLiteUI.Controllers
                     &&
                     x.AppointmentDate < DateTime.Now.AddDays(2)
                     )
+                    && x.AppointmentStatus != AppointmentStatus.Cancelled
                     ).ToList();
 
                 foreach (var houritem in hours)
@@ -272,7 +273,7 @@ namespace CDASLiteUI.Controllers
             {
                 //Check whether an appointment exists for the exact same time interval
                 DateTime appointmentDate = Convert.ToDateTime(date);
-                if (unitOfWork.AppointmentRepository.GetFirstOrDefault(x => x.AppointmentDate == appointmentDate && x.AppointmentHour == hour) != null)
+                if (unitOfWork.AppointmentRepository.GetFirstOrDefault(x => x.AppointmentDate == appointmentDate && x.AppointmentHour == hour && x.AppointmentStatus != AppointmentStatus.Cancelled) != null)
                 {
                     message = $"You have already booked an appointment for the following date {date} - {hour}.";
                     return Json(new { isSuccess = false, message });
