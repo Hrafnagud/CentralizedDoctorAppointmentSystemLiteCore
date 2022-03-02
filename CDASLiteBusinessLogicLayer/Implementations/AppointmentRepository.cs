@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CDASLiteEntityLayer.Constants;
 
 namespace CDASLiteBusinessLogicLayer.Implementations
 {
@@ -108,6 +109,46 @@ namespace CDASLiteBusinessLogicLayer.Implementations
                 }
                 var returnData = mapper.Map<List<Appointment>, List<AppointmentVM>>(data);
                 return returnData;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        /// <summary>
+        /// Brings appointments which is ahead of the given date
+        /// </summary>
+        /// <param name="dt"></param>
+        /// <returns></returns>
+        public List<AppointmentVM> GetAppointmentsIM(DateTime? dt)
+        {
+            try
+            {
+                List<AppointmentVM> data = new List<AppointmentVM>();
+                var result = from a in myContext.Appointments
+                             join hcid in myContext.HospitalClinics
+                             on a.HospitalClinicId equals hcid.Id
+                             join c in myContext.Clinics
+                             on hcid.ClinicId equals c.Id
+                             where c.ClinicName == ClinicsConstants.INTERNAL_MEDICINE && a.AppointmentStatus != AppointmentStatus.Cancelled
+                             select a;
+                if (dt != null)
+                {
+                    var date = Convert.ToDateTime(dt.Value.ToShortDateString());
+                    result = result.Where(x => x.AppointmentDate >= date);
+                }
+
+                foreach (var item in result)
+                {
+                    item.Patient = myContext.Patients.FirstOrDefault(x => x.TRID == item.PatientId);
+                    
+                    item.Patient.AppUser = userManager.FindByNameAsync(item.PatientId).Result;
+
+                }
+
+                data = mapper.Map<List<Appointment>, List<AppointmentVM>>(result.ToList());
+                return data;
             }
             catch (Exception)
             {
