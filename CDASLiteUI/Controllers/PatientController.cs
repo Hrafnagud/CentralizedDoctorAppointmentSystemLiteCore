@@ -1,6 +1,7 @@
 ﻿using CDASLiteBusinessLogicLayer.Contracts;
 using CDASLiteBusinessLogicLayer.EmailService;
 using CDASLiteEntityLayer;
+using CDASLiteEntityLayer.Constants;
 using CDASLiteEntityLayer.Enums;
 using CDASLiteEntityLayer.IdentityModels;
 using CDASLiteEntityLayer.Models;
@@ -278,6 +279,23 @@ namespace CDASLiteUI.Controllers
                     message = $"You have already booked an appointment for the following date {date} - {hour}.";
                     return Json(new { isSuccess = false, message });
                 }
+
+                #region RomatologyAppointment_ClaimsCheck
+                //Romatology appointment,
+                var hcidData = unitOfWork.HospitalClinicRepository.GetFirstOrDefault(x => x.Id == hcid, includeProperties: "Hospital,Clinic,Doctor");
+                if (hcidData.Clinic.ClinicName == ClinicsConstants.ROMATOLOGY)
+                {
+                    //Check Claim
+                    string resultMessage = AvailabilityMessageForRomatologyAppointment(hcidData);
+                    if (!string.IsNullOrEmpty(resultMessage))
+                    {
+                        return Json(new { isSuccess = false, message = resultMessage });
+                    }
+
+
+                }
+                #endregion
+
                 //save appointment
                 Appointment patientAppointment = new Appointment()
                 {
@@ -315,6 +333,41 @@ namespace CDASLiteUI.Controllers
             {
                 message = $"Error: {ex.Message}";
                 return Json(new { isSuccess = false, message });
+            }
+        }
+
+        private string AvailabilityMessageForRomatologyAppointment(HospitalClinic hcidData)
+        {
+            try
+            {
+                string returnMessage = string.Empty;
+                //If record exists in aspnetuserclaims  table, that records's InternalMedicine-Romatology value will be extracted.
+                var claimList = HttpContext.User.Claims.ToList();
+                var claim = claimList.FirstOrDefault(x => x.Type == "DahiliyeRomatoloji");
+                if (claim != null)
+                {
+                    //2_dd.MM.yyyy, seperate claim info.
+                    var claimValue = claim.Value;
+                    int claimHCID = Convert.ToInt32(claimValue.Substring(0, claimValue.IndexOf('_')));
+                    DateTime claimDate = Convert.ToDateTime(claimValue.Substring(claimValue.IndexOf('_') + 1).ToString());
+
+                    var claimHCIDData = unitOfWork.HospitalClinicRepository.GetFirstOrDefault(x => x.Id == claimHCID);
+                    if (hcidData.Hospital.Id != claimHCIDData.Hospital.Id)
+                    {
+                        returnMessage = $"Internal medicine examination is prerequisite for Romatology appointment. You can only book Romatology appointment for hospital {claimHCIDData.Hospital.HospitalName}";
+                    }
+                }
+
+                else
+                {
+                    returnMessage = "ATTENTION! In order to book an appointment for Romatology clinic, you must be examined by Internal medicine clinic utmost 30 days before";
+                }
+                return returnMessage;
+            }
+            catch (Exception)
+            {
+
+                throw;
             }
         }
 
