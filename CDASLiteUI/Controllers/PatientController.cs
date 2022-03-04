@@ -341,8 +341,11 @@ namespace CDASLiteUI.Controllers
             try
             {
                 string returnMessage = string.Empty;
-                //If record exists in aspnetuserclaims  table, that records's InternalMedicine-Romatology value will be extracted.
-                var claimList = HttpContext.User.Claims.ToList();
+                ////If record exists in aspnetuserclaims  table, that records's InternalMedicine-Romatology value will be extracted.
+                //var claimList = HttpContext.User.Claims.ToList();
+                //var claim = claimList.FirstOrDefault(x => x.Type == "DahiliyeRomatoloji");
+                var user = userManager.FindByNameAsync(HttpContext.User.Identity.Name).Result;
+                var claimList = userManager.GetClaimsAsync(user).Result;
                 var claim = claimList.FirstOrDefault(x => x.Type == "DahiliyeRomatoloji");
                 if (claim != null)
                 {

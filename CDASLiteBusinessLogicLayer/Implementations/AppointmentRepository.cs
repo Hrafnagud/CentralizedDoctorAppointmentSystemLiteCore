@@ -117,7 +117,7 @@ namespace CDASLiteBusinessLogicLayer.Implementations
             }
         }
         /// <summary>
-        /// Brings appointments which is ahead of the given date
+        /// Brings appointments which is behind of the given date
         /// </summary>
         /// <param name="dt"></param>
         /// <returns></returns>
@@ -131,11 +131,11 @@ namespace CDASLiteBusinessLogicLayer.Implementations
                              on a.HospitalClinicId equals hcid.Id
                              join c in myContext.Clinics
                              on hcid.ClinicId equals c.Id
-                             where c.ClinicName == ClinicsConstants.INTERNAL_MEDICINE && a.AppointmentStatus != AppointmentStatus.Cancelled
+                             where c.ClinicName == ClinicsConstants.INTERNAL_MEDICINE && a.AppointmentStatus == AppointmentStatus.Passive
                              select a;
                 if (dt != null)
                 {
-                    var date = Convert.ToDateTime(dt.Value.ToShortDateString());
+                    var date = Convert.ToDateTime(dt.Value.ToString("dd/MM/yyyy"));
                     result = result.Where(x => x.AppointmentDate >= date);
                 }
 
