@@ -36,24 +36,9 @@ namespace CDASLiteUI.Controllers
             this.emailSender = emailSender;
             this.unitOfWork = unitOfWork;
             this.configuration = configuration;
-            CheckRoles();
         }
 
-        private void CheckRoles()
-        {
-            var allRoles = Enum.GetNames(typeof(RoleNames));
-            foreach (var item in allRoles)
-            {
-                if (!roleManager.RoleExistsAsync(item).Result)
-                {
-                    var result = roleManager.CreateAsync(new AppRole()
-                    {
-                        Name = item,
-                        Description = item
-                    }).Result;  //In methods which is not async type, we can use async object methods by using Result property. 
-                }
-            }
-        }
+
 
         [HttpGet]
         public IActionResult Register()

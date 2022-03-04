@@ -71,7 +71,7 @@ namespace CDASLiteUI
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, UserManager<AppUser> userManager, RoleManager<AppRole> roleManager, IUnitOfWork unitOfWork)
         {
             if (env.IsDevelopment())
             {
@@ -93,6 +93,10 @@ namespace CDASLiteUI
             app.UseSession();           //For Session mechanism
             app.UseAuthentication();    //To use login logout
             app.UseAuthorization();     //To use authorization attribute
+
+            //
+
+            CreateDefaultData.CreateData.Create(userManager, roleManager, unitOfWork, Configuration, env);
             //end myComment#
 
             app.UseEndpoints(endpoints =>
