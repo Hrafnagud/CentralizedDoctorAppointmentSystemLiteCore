@@ -20,22 +20,76 @@ namespace CDASLiteUI.CreateDefaultData
         {
             //Method calls to add data.
             //CheckRoles(roleManager);
-            CreateCities(environment, unitOfWork);
+            //CreateCities(environment, unitOfWork);
             //This method is suitable to implement CheckRoles or Cities only. Other tables such as hospitals, clinics (has loads of data) would be not so cost efficient.
-            CreateClinics(environment, unitOfWork);
+            //CreateClinics(environment, unitOfWork);
             //These guys will be added via scripts. Too Expensive for server side.
             #if DEBUG
                 CreateDistricts(environment, unitOfWork);
-                //CreateDistricts(environment, unitOfWork);
+                CreateHospitals(environment, unitOfWork);
             #endif
+        }
+
+        private static void CreateHospitals(IWebHostEnvironment environment, IUnitOfWork unitOfWork)
+        {
+            try
+            {
+                var hospitalList = unitOfWork.HospitalRepository.GetAll().ToList();
+
+                //Provide a path for excel file
+                // Excel dosyasının bulunduğu yolu aldık
+                string path = Path.Combine(environment.WebRootPath, "Excels");
+                string fileName = Path.GetFileName("Hospitals.xlsx");
+                string filePath = Path.Combine(path, fileName);
+                using (var excelBook = new XLWorkbook(filePath))
+                {
+                    var rows = excelBook.Worksheet(1).RowsUsed();
+                    foreach (var item in rows)
+                    {
+                        if (item.RowNumber() > 1
+                            && item.RowNumber() <= rows.Count())
+                        {
+                            var cell = item.Cell(1).Value; //Hospital Name
+                            var districtId = Convert.ToInt32(item.Cell(2).Value); //DistrictId
+                            var district = unitOfWork.DistrictRepository.GetFirstOrDefault(x => x.Id == districtId);
+                            var address = item.Cell(3).Value;   //Address
+                            var email = item.Cell(4).Value;   //email
+                            var latitude = item.Cell(5).Value;   
+                            var longitude = item.Cell(6).Value;
+                            var phoneNumber = item.Cell(7).Value;
+                            Hospital hospital= new Hospital()
+                            {
+                                HospitalName= cell.ToString(),
+                                DistrictId= districtId,
+                                CreatedDate = DateTime.Now,
+                                Address = address.ToString(),
+                                Email = email.ToString(),
+                                Latitude = latitude.ToString(),
+                                Longitude = longitude.ToString(),
+                                PhoneNumber = phoneNumber.ToString()
+                            };
+
+                            if (hospitalList.Count(x => x.HospitalName.ToLower() == cell.ToString().ToLower() && x.DistrictId == districtId) == 0)
+                            {
+                                unitOfWork.HospitalRepository.Add(hospital);
+                            }
+
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
         }
 
         private static void CreateDistricts(IWebHostEnvironment environment, IUnitOfWork unitOfWork)
         {
             try
             {
-                var districtList = unitOfWork.DistrictRepository
-                    .GetAll().ToList();
+                var districtList = unitOfWork.DistrictRepository.GetAll().ToList();
 
                 //Provide a path for excel file
                 // Excel dosyasının bulunduğu yolu aldık
@@ -74,7 +128,6 @@ namespace CDASLiteUI.CreateDefaultData
 
                 throw;
             }
-
         }
 
         private static void CheckRoles(RoleManager<AppRole> roleManager)
