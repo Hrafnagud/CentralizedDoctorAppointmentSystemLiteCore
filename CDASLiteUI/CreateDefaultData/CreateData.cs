@@ -19,14 +19,14 @@ namespace CDASLiteUI.CreateDefaultData
         public static void Create(UserManager<AppUser> userManager, RoleManager<AppRole> roleManager, IUnitOfWork unitOfWork, IConfiguration configuration, IWebHostEnvironment environment)
         {
             //Method calls to add data.
-            //CheckRoles(roleManager);
+            CheckRoles(roleManager);
             //CreateCities(environment, unitOfWork);
             //This method is suitable to implement CheckRoles or Cities only. Other tables such as hospitals, clinics (has loads of data) would be not so cost efficient.
             //CreateClinics(environment, unitOfWork);
             //These guys will be added via scripts. Too Expensive for server side.
             #if DEBUG
-                CreateDistricts(environment, unitOfWork);
-                CreateHospitals(environment, unitOfWork);
+                //CreateDistricts(environment, unitOfWork);
+                //CreateHospitals(environment, unitOfWork);
             #endif
         }
 
