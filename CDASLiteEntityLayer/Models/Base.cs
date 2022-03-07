@@ -13,6 +13,7 @@ namespace CDASLiteEntityLayer.Models
     {
         [Key]
         [Column(Order = 1)]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public T Id { get; set; }
 
         [Column(Order = 2)]
