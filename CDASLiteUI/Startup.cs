@@ -57,6 +57,13 @@ namespace CDASLiteUI
             {
                 options.IdleTimeout = TimeSpan.FromSeconds(60); //Logout due to inactivity
             });
+
+            //API Secret included.
+            services.AddAuthentication().AddGoogle(options => {
+                options.ClientId = Configuration["Authentication:Google:ClientId"];
+                options.ClientSecret = Configuration["Authentication:Google:ClientSecret"];
+            });
+
             services.AddIdentity< AppUser, AppRole >(opts =>
             {
                 opts.User.RequireUniqueEmail = true;

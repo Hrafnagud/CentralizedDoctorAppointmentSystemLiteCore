@@ -307,5 +307,10 @@ namespace CDASLiteUI.Controllers
                 return View(model);
             }
         }
+
+        //public IActionResult GoogleLogin(string returnUrl)
+        //{
+
+        //}
     }
 }

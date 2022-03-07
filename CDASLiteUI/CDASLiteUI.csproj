@@ -2,12 +2,19 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
+    <UserSecretsId>14bc8d0c-b9df-4b26-a001-ca6641400bf1</UserSecretsId>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Content Remove="myResources\ClientIdSecret.json" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="9.0.0" />
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="7.0.0" />
     <PackageReference Include="ClosedXML" Version="0.95.4" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Facebook" Version="5.0.14" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="5.0.14" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="5.0.14" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.14" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.14">
@@ -32,6 +39,10 @@
   <ItemGroup>
     <Folder Include="Areas\Management\Data\" />
     <Folder Include="Areas\Management\Models\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="myResources\ClientIdSecret.json" />
   </ItemGroup>
 
 </Project>
