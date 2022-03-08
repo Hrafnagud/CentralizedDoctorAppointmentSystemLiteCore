@@ -13,13 +13,14 @@ using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 
 namespace CDASLiteUI.Controllers
 {
-    public class AccountController : Controller
+    public class AccountController : BaseController
     {
         private readonly UserManager<AppUser> userManager;
         private readonly SignInManager<AppUser> signInManager;
@@ -308,9 +309,71 @@ namespace CDASLiteUI.Controllers
             }
         }
 
-        //public IActionResult GoogleLogin(string returnUrl)
-        //{
+        public IActionResult GoogleLogin(string returnUrl)
+        {
+            string redirectUrl = Url.Action("ExternalResponse", "Account", new { returnUrl });
+            var properties = signInManager.ConfigureExternalAuthenticationProperties("Google", redirectUrl);
+            return new ChallengeResult("Google", properties);
+        }        
+        
+        public IActionResult FacebookLogin(string returnUrl)
+        {
+            string redirectUrl = Url.Action("ExternalResponse", "Account", new { returnUrl });
+            var properties = signInManager.ConfigureExternalAuthenticationProperties("Facebook", redirectUrl);
+            return new ChallengeResult("Facebook", properties);
+        }
 
-        //}
+        public IActionResult ExternalResponse(string returnUrl = "/")
+        {
+            try
+            {
+                ExternalLoginInfo info = signInManager.GetExternalLoginInfoAsync().Result;
+                Microsoft.AspNetCore.Identity.SignInResult result = signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, true).Result;
+                if (result.Succeeded)
+                {
+                    return RedirectToAction(returnUrl);
+                }
+                else
+                {
+                    AppUser newUser = new AppUser();
+                    newUser.Email = info.Principal.FindFirst(ClaimTypes.Email).Value;
+                    string externalUserId = info.Principal.FindFirst(ClaimTypes.NameIdentifier).Value;
+                    var userExistence = userManager.FindByEmailAsync(newUser.Email).Result;
+
+                    if (userExistence == null)
+                    {
+                        IdentityResult createResult = userManager.CreateAsync(newUser).Result;
+                        if (createResult.Succeeded)
+                        {
+                            IdentityResult loginResult = userManager.AddLoginAsync(newUser, info).Result;
+                            if (loginResult.Succeeded)
+                            {
+                                signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, true);
+                                return RedirectToAction(returnUrl);
+                            }
+                            else
+                            {
+                                AddModelErrors(loginResult);
+                            }
+                        }
+                        else
+                        {
+                            AddModelErrors(createResult);
+                        }
+                    }
+                    else
+                    {
+                        IdentityResult loginResult = userManager.AddLoginAsync(userExistence, info).Result;
+                        signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, true);
+                        return RedirectToAction(returnUrl);
+                    }
+                }
+                return RedirectToAction("/");
+            }
+            catch (Exception)
+            {
+                return RedirectToAction("/");
+            }
+        }
     }
 }
